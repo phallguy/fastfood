@@ -1,0 +1,7 @@
+--protected
+--no-private
+--no-cache
+--hide-void-return
+--output-dir /tmp/fast_food_docs
+--db /tmp/fastfood_yardoc
+--markup markdown
