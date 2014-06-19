@@ -6,7 +6,9 @@ namespace :fastfood do
     set(:swapfile_size, 4096)
 
     task default: [
-      "bootstrap:create_provision_user",
+      "fastfood:bootstrap:create_provision_user",
+      "fastfood:provision:users",
+      "git:install"
       ] do
     end
 
@@ -19,26 +21,14 @@ namespace :fastfood do
       end
     end
 
-    # task :create_remote_user do
-    #   roles(:all).each do |host|
-    #     ssh_path = "/home/#{host.username}/.ssh"
-    #     key_file = "#{ssh_path}/authorized_keys"
-    #     `ssh #{fetch(:root_user)}@#{host.hostname} 'useradd --create-home --shell /bin/bash #{host.username} || true; mkdir -p "#{ssh_path}"'`
-    #     `cat #{fetch(:pub_keys)} | ssh #{fetch(:root_user)}@#{host.hostname} 'cat - > /tmp/authorized_keys; mv -f /tmp/authorized_keys #{key_file}; chown #{host.username}:#{host.username} #{key_file}; chmod 0600 #{key_file}; sh -c "echo 127.0.0.1 #{host.hostname} >> /etc/hosts"'`
-    #     `ssh #{fetch(:root_user)}@#{host.hostname} 'echo "#{host.username}   ALL = NOPASSWD: ALL" > /etc/sudoers.d/#{host.username}; chmod 0440 /etc/sudoers.d/#{host.username}'`
-    #   end
-    # end
-
-    # task :clone_local_user do
-    #   roles(:all).each do |host|
-    #     ssh_path = "/home/#{local_user}/.ssh"
-    #     key_file = "#{ssh_path}/authorized_keys"
-    #     `ssh #{fetch(:root_user)}@#{host.hostname} 'useradd --create-home --shell /bin/bash #{local_user} || true; mkdir -p "#{ssh_path}"'`
-    #     `cat #{fetch(:pub_keys)} | ssh #{fetch(:root_user)}@#{host.hostname} 'cat - > /tmp/authorized_keys; mv -f /tmp/authorized_keys #{key_file}; chown #{local_user}:#{local_user} #{key_file}; chmod 0600 #{key_file}; sh -c "echo 127.0.0.1 #{host.hostname} >> /etc/hosts"'`
-    #     `ssh #{fetch(:root_user)}@#{host.hostname} 'echo "#{local_user}   ALL = NOPASSWD: ALL" > /etc/sudoers.d/#{local_user}; chmod 0440 /etc/sudoers.d/#{local_user}'`
-
-    #   end
-    # end
+    task :setup_folders do
+      release_roles( :all ).each do |host|
+        on provisioned_host host do
+          sudo :mkdir, "-p #{fetch(:deploy_to)}"
+          sudo :chown, "-R #{host.user}:#{host.user} #{fetch(:deploy_to)}"
+        end
+      end
+    end
 
     # # enable swap file
     # # https://www.digitalocean.com/community/articles/how-to-add-swap-on-ubuntu-12-04

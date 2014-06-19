@@ -8,6 +8,8 @@ module Fastfood
       def provisioner( subject, host )
         if provisioner = provisioners[subject]
           provisioner.respond_to?(:call) ? provisioner.call( host ) : provisioner.new( host )
+        else
+          fail "#{self.class.name} doesn't know how to provision #{subject}"
         end
       end
 

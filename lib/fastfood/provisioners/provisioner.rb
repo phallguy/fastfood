@@ -46,6 +46,17 @@ module Fastfood
         def run_with_data( data )
           fail "Implement #run_with_data in #{self.class.name}."
         end
+
+        # Perform an action with the configured host on the server. Allows base
+        # classes to perform some sort of setup.
+        def on_host( &block )
+          on host do
+            with debian_frontend: "noninteractive" do
+              instance_eval &block
+            end
+          end
+        end
+
     end
   end
 end
