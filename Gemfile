@@ -4,5 +4,10 @@ source 'https://rubygems.org'
 gemspec
 
 
-gem 'guard'
+gem 'guard', '~> 2.6.1'
 gem 'spring'
+gem 'byebug'
+gem 'pry-byebug'
+gem 'guard-rspec'
+gem 'guard-spring'
+gem 'fuubar'

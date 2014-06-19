@@ -1,0 +1,1 @@
+require 'fastfood/provisioners/provisioner'
