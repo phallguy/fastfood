@@ -6,11 +6,17 @@ namespace :fastfood do
     set(:swapfile_size, 4096)
 
     task default: [
-      "bootstrap:create_remote_user",
-      "bootstrap:clone_local_user",
-      "bootstrap:swapfile",
-      "system:update"
+      "bootstrap:create_provision_user",
       ] do
+    end
+
+    task :create_provision_user do
+      puts "Ensuring provisioning user exists"
+      roles(:all).each do |host|
+        bootstrap :user,
+                  host,
+                  fetch( :users ).slice( fetch(:provision_user).to_sym )
+      end
     end
 
     # task :create_remote_user do

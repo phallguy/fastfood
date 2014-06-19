@@ -3,14 +3,7 @@ namespace :fastfood do
 
     set :users, repo( "config/fastfood/data/users.json", merge: true )
 
-    task users: ["fastfood:provision:provision_user", "fastfood:provision:deploy_user", "fastfood:provision:system_users"]
-
-
-    task :deploy_user do
-
-    end
-
-    task :system_users do
+    task :users do
       manager = fetch(:fastfood_manager)
 
       puts "Provisioning system users"
@@ -19,13 +12,5 @@ namespace :fastfood do
       end
     end
 
-    task :provision_user do
-      puts "Ensuring provisioning user exists"
-      roles(:all).each do |host|
-        bootstrap :user,
-                  host,
-                  fetch( :users ).slice( fetch(:provision_user).to_sym )
-      end
-    end
   end
 end

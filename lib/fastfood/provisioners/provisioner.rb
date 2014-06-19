@@ -10,7 +10,9 @@ module Fastfood
 
       # @param [Capistrano::Configuration::Server] host to run on.
       def initialize( host )
-        @host = host
+        host = Array( host )
+        fail "Expecting exactly 1 host" if host.length != 1
+        @host = host.first
       end
 
       # Perform the provisioning task using the provided data.
@@ -19,7 +21,17 @@ module Fastfood
         run_with_data( collect_data( data ) )
       end
 
-      private
+      protected
+
+        # Determines if the provisioner should run with the given options.
+        # @option options [Array<Symbol,String>] roles we're limited to.
+        def should_run?( options )
+          if roles = options[:roles]
+            return false unless roles.any?{ |r| host.has_role? r }
+          end
+
+          true
+        end
 
         # Allow the provisioner to collect data from the server and merge it with
         # the provided data before running.

@@ -5,12 +5,29 @@ module Fastfood
 
     def provision( context, host, *args )
       manager = fetch(:fastfood_manager)
-      manager.provisioner( context, provisioned_host( host ) ).run( *args )
+      provisioned_hosts( host ).each do |provisioned|
+        manager.provisioner( context, provisioned ).run( *args )
+      end
     end
 
     def bootstrap( context, host, *args )
       manager = fetch(:fastfood_manager)
-      manager.provisioner( context, bootstrapped_host( host ) ).run( *args )
+      bootstrapped_hosts( host ).each do |bootstrapped|
+        manager.provisioner( context, bootstrapped ).run( *args )
+      end
+    end
+
+    def sudo( *args )
+      execute :sudo, *args
+    end
+
+    def sudo_upload!( io, destination )
+      tmp = "/tmp/#{SecureRandom.uuid}"
+      upload! io, tmp
+      yield tmp if block_given?
+      sudo :mv, tmp, destination
+    ensure
+      sudo :rm, "-f", tmp
     end
 
     def provisioned_hosts( hosts )
