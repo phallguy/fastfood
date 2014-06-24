@@ -1,5 +1,5 @@
-require 'fastfood/provisioners/linux_user'
-require 'fastfood/provisioners/apt_get_installer'
+require 'fastfood/services/linux_user'
+require 'fastfood/services/apt_get_installer'
 
 module Fastfood
   module Franchises
@@ -8,8 +8,8 @@ module Fastfood
       def initialize
         super
 
-        register_provisioner :user, Fastfood::Provisioners::LinuxUser
-        register_provisioner :install, Fastfood::Provisioners::AptGetInstaller
+        register_service :user, Fastfood::Services::LinuxUser
+        register_service :install, Fastfood::Services::AptGetInstaller
       end
     end
   end

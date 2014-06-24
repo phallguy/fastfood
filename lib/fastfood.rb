@@ -2,16 +2,16 @@ require 'pry'
 module Fastfood
   module_function
 
-  def fastfood_tasks
-    @fastfood_tasks ||= File.expand_path( "../capistrano/tasks", __FILE__ )
+  def fastfood_tasks_path
+    @fastfood_tasks_path ||= File.expand_path( "../capistrano/tasks", __FILE__ )
   end
 
   def load_task( path )
-    load_task_from_file File.join( fastfood_tasks, path )
+    load_task_from_file File.join( fastfood_tasks_path, path )
   end
 
   def load_tasks( path )
-    Dir[ File.join( fastfood_tasks, path ) ].each do |file|
+    Dir[ File.join( fastfood_tasks_path, path ) ].each do |file|
       load_task_from_file file
     end
   end
@@ -20,7 +20,6 @@ module Fastfood
     file = "#{file}.rake" unless file =~ /\.rake$/i
     load file
   end
-
 
   # Finds versions of the given file looking in the project folder and default
   # fast food folders.
@@ -50,4 +49,4 @@ end
 require 'fastfood/version'
 require 'fastfood/dsl'
 require 'fastfood/franchises'
-require 'fastfood/provisioners'
+require 'fastfood/services'

@@ -1,0 +1,9 @@
+{
+  "root" : {
+    "name" : "Administrator"
+  },
+  "johnq" : {
+    "name" : "Public",
+    "email" : "johnq@public.com"
+  }
+}

@@ -2,12 +2,12 @@ module Fastfood
   module Franchises
     class Franchise
       def initialize
-        @provisioners = {}
+        @services = {}
       end
 
-      def provisioner( subject, host )
-        if provisioner = provisioners[subject]
-          provisioner.respond_to?(:call) ? provisioner.call( host ) : provisioner.new( host )
+      def service( subject, host )
+        if service = services[subject]
+          service.respond_to?(:call) ? service.call( host ) : service.new( host )
         else
           fail "#{self.class.name} doesn't know how to provision #{subject}"
         end
@@ -15,10 +15,10 @@ module Fastfood
 
       private
 
-        attr_reader :provisioners
+        attr_reader :services
 
-        def register_provisioner( subject, provisioner )
-          provisioners[subject] = provisioner
+        def register_service( subject, service )
+          services[subject] = service
         end
     end
   end

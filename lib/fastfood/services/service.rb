@@ -1,10 +1,10 @@
 module Fastfood
-  module Provisioners
-    # Provisioners do the actual work on the server running tasks, installing software
+  module Services
+    # Services do the actual work on the server running tasks, installing software
     # adding users, etc.
-    class Provisioner
+    class Service
 
-      # @return [Capistrano::Configuration::Server] the host that the provisioner
+      # @return [Capistrano::Configuration::Server] the host that the service
       #   will perform it's actions on.
       attr_reader :host
 
@@ -23,7 +23,7 @@ module Fastfood
 
       protected
 
-        # Determines if the provisioner should run with the given options.
+        # Determines if the service should run with the given options.
         # @option options [Array<Symbol,String>] roles we're limited to.
         def should_run?( options )
           if roles = options[:roles]
@@ -33,7 +33,7 @@ module Fastfood
           true
         end
 
-        # Allow the provisioner to collect data from the server and merge it with
+        # Allow the service to collect data from the server and merge it with
         # the provided data before running.
         # @param [Hash] current data.
         # @return [Hash] the combined data.
@@ -41,7 +41,7 @@ module Fastfood
           data
         end
 
-        # OVERRIDE THIS when implementing a provisioner to do the actual work.
+        # OVERRIDE THIS when implementing a service to do the actual work.
         # @param [Hash] data to use when working.
         def run_with_data( data )
           fail "Implement #run_with_data in #{self.class.name}."
@@ -52,7 +52,7 @@ module Fastfood
         def on_host( &block )
           on host do
             with debian_frontend: "noninteractive" do
-              instance_eval &block
+              instance_eval( &block )
             end
           end
         end

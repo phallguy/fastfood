@@ -1,8 +1,8 @@
-require 'fastfood/provisioners/user'
+require 'fastfood/services/user'
 
 module Fastfood
-  module Provisioners
-    class LinuxUser < Fastfood::Provisioners::User
+  module Services
+    class LinuxUser < Fastfood::Services::User
 
       private
         def run_with_data( data )

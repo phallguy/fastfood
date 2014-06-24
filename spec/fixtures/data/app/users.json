@@ -1,0 +1,8 @@
+{
+  "deploy" : {
+    "name" : "Deploy"
+  },
+  "johnq" : {
+    "name": "Publique"
+  }
+}

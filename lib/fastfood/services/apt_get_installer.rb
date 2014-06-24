@@ -1,8 +1,8 @@
-require 'fastfood/provisioners/provisioner'
+require 'fastfood/services/service'
 
 module Fastfood
-  module Provisioners
-    class AptGetInstaller < Fastfood::Provisioners::Provisioner
+  module Services
+    class AptGetInstaller < Fastfood::Services::Service
 
       private
         def run_with_data( data )
