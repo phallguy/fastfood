@@ -1,7 +1,8 @@
 namespace :git do
-  task :install do
-    roles(:all).each do |host|
-      provision :install, host, packages: :git
-    end
+
+  fastfood do
+    # Require the git package from the package manager is installed.
+    package :git
   end
+
 end

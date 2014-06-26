@@ -1,6 +1,17 @@
-require 'pry'
+require 'fastfood/version'
+
 module Fastfood
+
+  autoload :DSL        , 'fastfood/dsl'
+  autoload :Franchises , 'fastfood/franchises'
+  autoload :Services   , 'fastfood/services'
+
   module_function
+
+  # Sets up a block for configuring fast food settings using a DSL
+  def configure(&block)
+    Fastfood::Configuration.instance_eval( &block )
+  end
 
   def fastfood_tasks_path
     @fastfood_tasks_path ||= File.expand_path( "../capistrano/tasks", __FILE__ )
@@ -45,8 +56,3 @@ module Fastfood
   def file_paths; @file_paths end
 
 end
-
-require 'fastfood/version'
-require 'fastfood/dsl'
-require 'fastfood/franchises'
-require 'fastfood/services'

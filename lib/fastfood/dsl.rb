@@ -3,6 +3,11 @@ require 'json'
 module Fastfood
   module DSL
 
+    # Sets up a fastfood configuration context.
+    def fastfood(&block)
+      Fastfood.configure(&block)
+    end
+
     # Run a task on a server using the provisioning credentials.
     # @param [Symbol] subject used to look up the service from the fastfood_franchise.
     # @param [Host] host to perform the service on.
@@ -54,7 +59,7 @@ module Fastfood
 
     # Loads a set of data from local data files in the application configuration
     # @param [String] path to the repo file (ex config/fastfood/data/users.json)
-    # @optionoptions [Boolean] :merge inherited data. Default true.
+    # @option options [Boolean] :merge inherited data. Default true.
     def repo( path, options = {} )
       files = Fastfood.find_files( path )
       warn_repo_missing path if files.empty? && options.fectch(:warn,true)
@@ -99,5 +104,4 @@ module Fastfood
 
   end
 end
-
 include Fastfood::DSL
