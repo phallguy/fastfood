@@ -14,11 +14,18 @@ module Fastfood
         end
 
         def read_config_file( data )
-          download! data.fetch(:file)
+          contents = nil
+          on_host do
+            contents = download! data.fetch(:file)
+          end
+
+          contents
         end
 
         def write_config_file( modified, data )
-          sudo_upload! StringIO.new( modified ), data.fetch(:file)
+          on_host do
+            sudo_upload! StringIO.new( modified ), data.fetch(:file)
+          end
         end
 
         # Acutal change handler.
@@ -48,7 +55,7 @@ module Fastfood
           private
 
             def line
-              @line ||= data.fetch( :line_ending, $INPUT_RECORD_SEPARATOR )
+              @line ||= data.fetch( :line_ending, $/ )
             end
 
             def comment
@@ -64,9 +71,10 @@ module Fastfood
             def change_key( change )
               key   = change.fetch( :key )
               entry = "#{key}#{change.fetch(:separator,DEFAULT_VALUE_SEPARATOR)}#{change.fetch(:value)}"
+              id    = change.fetch( :id, key )
 
-              range = find_fastfood_block( key ) || find_key_entry( change ) || [-1]
-              @contents[*range] = format_block( key, entry )
+              range = find_fastfood_block( id ) || find_key_entry( change ) || [-1]
+              @contents[*range] = format_block( id, entry )
             end
 
             def format_block( id, block_contents )
@@ -78,7 +86,8 @@ module Fastfood
 
             def find_fastfood_block( id )
               # http://refiddle.com/15lj
-              pattern = /(#{line}?#{comment}\s+BEGIN FASTFOOD.*(\[#{ Regexp.escape( id ) }\]).*#{comment}\s+END FASTFOOD \2\s+#{line}?)/m
+              ln      = Regexp.escape( line )
+              pattern = /(#{ln}?#{comment}\s+BEGIN FASTFOOD.*(\[#{ Regexp.escape( id ) }\]).*#{comment}\s+END FASTFOOD \2\s+#{ln}?)/m
               match   = pattern.match( contents ) || return
 
               range = match.offset(1)

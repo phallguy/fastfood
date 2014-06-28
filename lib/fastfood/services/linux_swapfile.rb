@@ -25,7 +25,7 @@ module Fastfood
           run_service \
             :config_change,
             file: "/etc/fstab",
-            changes: { entry: "#{location} none swap sw 0 0" }
+            changes: { entry: "#{location} none swap sw 0 0", id: "swap" }
 
         end
 

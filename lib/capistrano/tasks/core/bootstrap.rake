@@ -1,6 +1,6 @@
 namespace :fastfood do
   namespace :bootstrap do
-    set(:swapfile_size, 128)
+    set(:swapfile_size, 4096)
 
     task default: [
       "fastfood:bootstrap:create_provision_user",
