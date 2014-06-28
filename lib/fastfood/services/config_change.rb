@@ -4,6 +4,9 @@ module Fastfood
     # 'echo >> file' entries and sudoing and copying.
     class ConfigChange < Fastfood::Services::Service
 
+      DEFAULT_LINE_COMMENT    = '#'
+      DEFAULT_VALUE_SEPARATOR = '='
+
       private
 
         def run_with_data( data )
@@ -49,17 +52,21 @@ module Fastfood
             end
 
             def comment
-              @comment ||= data.fetch( :line_comment, '#' )
+              @comment ||= data.fetch( :line_comment, DEFAULT_LINE_COMMENT )
             end
 
             def change_entry( change )
-              range = find_fastfood_block( change.fetch(:id), ) || -1
+              range = find_fastfood_block( change.fetch(:id) ) || [-1]
 
-              @contents[*Array(range)] = format_block( change.fetch(:id), change.fetch(:entry) )
+              @contents[*range] = format_block( change.fetch(:id), change.fetch(:entry) )
             end
 
-            def change_key( change, file_contents, data )
+            def change_key( change )
+              key   = change.fetch( :key )
+              entry = "#{key}#{change.fetch(:separator,DEFAULT_VALUE_SEPARATOR)}#{change.fetch(:value)}"
 
+              range = find_fastfood_block( key ) || find_key_entry( change ) || [-1]
+              @contents[*range] = format_block( key, entry )
             end
 
             def format_block( id, block_contents )
@@ -74,7 +81,20 @@ module Fastfood
               pattern = /(#{line}?#{comment}\s+BEGIN FASTFOOD.*(\[#{ Regexp.escape( id ) }\]).*#{comment}\s+END FASTFOOD \2\s+#{line}?)/m
               match   = pattern.match( contents ) || return
 
-              match.offset(1)
+              range = match.offset(1)
+              [range[0],range[1]-range[0]]
+            end
+
+            def find_key_entry( change )
+              # http://refiddle.com/15m1
+              key       = Regexp.escape( change.fetch(:key)  )
+              separator = Regexp.escape( change.fetch(:separator, DEFAULT_VALUE_SEPARATOR) )
+
+              pattern   = /(^\s*#{ key }\s*#{ separator }\s*.*$)/
+              match     = pattern.match( contents ) || return
+
+              range = match.offset( 0 )
+              [range[0],range[1]-range[0]]
             end
         end
     end
