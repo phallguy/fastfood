@@ -9,8 +9,9 @@ module Fastfood
     # @option options [Array<Symbol>,Symbol] :roles to install the packages on.
     def package( package_names, options = {} )
       packages = fetch( :system_packages, {} )
+      package_names = Array( package_names ).map &:to_s
       Array( options.fetch( :roles, :all ) ).each do |role|
-        packages[role.to_sym] = packages.fetch( role.to_sym, [] ) + Array( package_names )
+        packages[role.to_sym] = packages.fetch( role.to_sym, Set.new ) + package_names
       end
 
       set :system_packages, packages

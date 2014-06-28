@@ -1,10 +1,12 @@
 require 'fastfood/version'
+require 'pry'
 
 module Fastfood
 
-  autoload :DSL        , 'fastfood/dsl'
-  autoload :Franchises , 'fastfood/franchises'
-  autoload :Services   , 'fastfood/services'
+  autoload :Configuration , 'fastfood/configuration'
+  autoload :DSL           , 'fastfood/dsl'
+  autoload :Franchises    , 'fastfood/franchises'
+  autoload :Services      , 'fastfood/services'
 
   module_function
 

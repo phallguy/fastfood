@@ -8,11 +8,16 @@ module Fastfood
       #   will perform it's actions on.
       attr_reader :host
 
+      # @return [Fastfood::Franchises:Franchise] used to coordinate other services
+      #   require to complete this service's tasks.
+      attr_reader :franchise
+
       # @param [Capistrano::Configuration::Server] host to run on.
-      def initialize( host )
+      def initialize( host, franchise )
         host = Array( host )
         fail "Expecting exactly 1 host" if host.length != 1
         @host = host.first
+        @franchise = franchise
       end
 
       # Perform the provisioning task using the provided data.
@@ -51,10 +56,15 @@ module Fastfood
         # classes to perform some sort of setup.
         def on_host( &block )
           on host do
-            with debian_frontend: "noninteractive" do
+            with term: "term" do
               instance_eval( &block )
             end
           end
+        end
+
+        # Provisions and runs a named service on the host.
+        def run_service( subject, data = {} )
+          franchise.service( subject, host ).run data
         end
 
     end

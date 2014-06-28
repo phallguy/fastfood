@@ -7,7 +7,7 @@ module Fastfood
 
       def service( subject, host )
         if service = services[subject]
-          service.respond_to?(:call) ? service.call( host ) : service.new( host )
+          service.respond_to?(:call) ? service.call( host, self ) : service.new( host, self )
         else
           fail "#{self.class.name} doesn't know how to provision #{subject}"
         end

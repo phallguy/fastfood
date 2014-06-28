@@ -10,6 +10,8 @@ module Fastfood
 
         register_service :user, Fastfood::Services::LinuxUser
         register_service :install, Fastfood::Services::AptGetInstaller
+        register_service :swapfile, Fastfood::Services::LinuxSwapfile
+        register_service :config_change, Fastfood::Services::ConfigChange
       end
     end
   end

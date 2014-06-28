@@ -36,7 +36,7 @@ module Fastfood
             blended += packages.fetch( role, [] )
           end
 
-          blended
+          blended.to_a
         end
 
     end

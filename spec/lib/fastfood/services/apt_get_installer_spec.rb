@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe Fastfood::Services::AptGetInstaller do
   let(:host){ Capistrano::Configuration::Server.new( "deploy@example.com" ) }
-  let(:installer){ Fastfood::Services::AptGetInstaller.new( host ) }
+  let(:installer){ Fastfood::Services::AptGetInstaller.new( host, nil ) }
 
   before(:each) do
-    installer.stub(:on_host)
+    allow( installer ).to receive(:on_host)
   end
 
   it "tries to install packages" do
