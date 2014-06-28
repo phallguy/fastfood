@@ -2,7 +2,8 @@ namespace :fastfood do
   namespace :system do
 
     fastfood do
-      package %w{ git git-core htop unattended-upgrades }, roles: :all
+      package %w{ git git-core htop }, roles: :all
+      package %w{ unattended-upgrades }, roles: :all if fetch(:unattended_upgrades)
     end
 
     task :update do

@@ -4,6 +4,7 @@ module Fastfood
     autoload :ConfigChange    , 'fastfood/services/config_change'
     autoload :LinuxUser       , 'fastfood/services/linux_user'
     autoload :LinuxSwapfile   , 'fastfood/services/linux_swapfile'
+    autoload :LinuxTemplate   , 'fastfood/services/linux_template'
     autoload :Service         , 'fastfood/services/service'
     autoload :User            , 'fastfood/services/user'
   end

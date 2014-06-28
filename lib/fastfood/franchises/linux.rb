@@ -8,10 +8,11 @@ module Fastfood
       def initialize
         super
 
-        register_service :user, Fastfood::Services::LinuxUser
-        register_service :install, Fastfood::Services::AptGetInstaller
-        register_service :swapfile, Fastfood::Services::LinuxSwapfile
-        register_service :config_change, Fastfood::Services::ConfigChange
+        register_service :user          , Fastfood::Services::LinuxUser
+        register_service :install       , Fastfood::Services::AptGetInstaller
+        register_service :swapfile      , Fastfood::Services::LinuxSwapfile
+        register_service :config_change , Fastfood::Services::ConfigChange
+        register_service :template      , Fastfood::Services::LinuxTemplate
       end
     end
   end

@@ -1,11 +1,13 @@
 namespace :fastfood do
   namespace :bootstrap do
-    set(:swapfile_size, 4096)
+    set(:swapfile_size, 1024)
+    set(:unattended_upgrades, true)
 
     task default: [
       "fastfood:bootstrap:create_provision_user",
       "fastfood:bootstrap:swapfile",
       "fastfood:provision:users",
+      "fastfood:bootstrap:setup_folders",
       "fastfood:system:install"
       ] do
     end
@@ -19,17 +21,14 @@ namespace :fastfood do
       end
     end
 
-    # task :setup_folders do
-    #   release_roles( :all ).each do |host|
-    #     on provisioned_host host do
-    #       sudo :mkdir, "-p #{fetch(:deploy_to)}"
-    #       sudo :chown, "-R #{host.user}:#{host.user} #{fetch(:deploy_to)}"
-    #     end
-    #   end
-    # end
-
-    # # enable swap file
-    # # https://www.digitalocean.com/community/articles/how-to-add-swap-on-ubuntu-12-04
+    task :setup_folders do
+      release_roles( :all ).each do |host|
+        on provisioned_host host do
+          sudo :mkdir, "-p #{fetch(:deploy_to)}"
+          sudo :chown, "-R #{host.user}:#{host.user} #{fetch(:deploy_to)}"
+        end
+      end
+    end
 
     task :swapfile do
       swapfile_size = fetch(:swapfile_size,0).to_i
@@ -38,12 +37,18 @@ namespace :fastfood do
       end
     end
 
-    # task :unattended_upgrades do
-    #   on roles(:all) do |host|
-    #     template host, "60unattended-upgrades-security.erb", "/tmp/60unattended-upgrades-security"
-    #     sudo :mv, "/tmp/60unattended-upgrades-security", "/etc/apt/apt.conf.d/60unattended-upgrades-security"
-    #   end
-    # end
+    task :unattended_upgrades do
+      next unless fetch(:unattended_upgrades)
+
+      release_roles(:all).each do |host|
+        provision :template, host,
+          template: "50unattended-upgrades.erb",
+          destination: "/etc/apt/apt.conf.d/50unattended-upgrades",
+          chown: "root:root",
+          chmod: "0644",
+          sudo: true
+      end
+    end
   end
 
   desc "Prepare a server for running capistrano tasks"

@@ -3,6 +3,7 @@ require 'fastfood/services/user'
 module Fastfood
   module Services
     class LinuxSwapfile < Fastfood::Services::Service
+      # https://www.digitalocean.com/community/articles/how-to-add-swap-on-ubuntu-12-04
 
       private
         def run_with_data( data )

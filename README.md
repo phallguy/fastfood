@@ -1,5 +1,7 @@
 # Fastfood
 
+[![Code Climate](https://codeclimate.com/github/phallguy/fastfood.png)](https://codeclimate.com/github/phallguy/fastfood)
+
 Because sometimes you just gotta eat and don't have time for chefs
 
 Fastfood is a collection of recipes and tasks for [capistrano 3](http://capistranorb.com/)

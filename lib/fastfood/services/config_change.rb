@@ -78,7 +78,7 @@ module Fastfood
             end
 
             def format_block( id, block_contents )
-              "#{line}#{comment} BEGIN FASTFOOD [#{id}] #{Time.now}#{line}"\
+              "#{line}#{comment} BEGIN FASTFOOD [#{id}] v#{Fastfood::VERSION} #{Time.now}#{line}"\
               "#{comment} Do not modify these lines. They will be overwritten on next fastfood run.#{line}"\
               "#{block_contents}#{line}"\
               "#{comment} END FASTFOOD [#{id}]#{line}"

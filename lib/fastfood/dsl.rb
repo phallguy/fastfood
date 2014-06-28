@@ -32,6 +32,10 @@ module Fastfood
 
     # Execute the given command as sudo
     def sudo( *args )
+      if args.first.is_a? Symbol
+        args = args.dup
+        args[0] = SSHKit.config.command_map[args[0]]
+      end
       execute :sudo, *args
     end
 
@@ -40,7 +44,7 @@ module Fastfood
       tmp = "/tmp/#{SecureRandom.uuid}"
       upload! io, tmp
       yield tmp if block_given?
-      sudo :mv, tmp, destination
+      sudo :mv, "-f", tmp, destination
     ensure
       sudo :rm, "-f", tmp
     end
@@ -69,15 +73,6 @@ module Fastfood
           deep_reverse_merge! data, json
         end
         break data unless options[:merge]
-      end
-    end
-
-    # Upload an ERB template file to a host.
-    def upload_template( host, from, to )
-      path = Fastfood.find_file from
-      erb = File.read( path )
-      on host do |host|
-        upload! ERB.new(erb).result(binding), to
       end
     end
 
