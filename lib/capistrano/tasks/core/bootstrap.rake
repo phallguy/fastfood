@@ -41,12 +41,12 @@ namespace :fastfood do
       next unless fetch(:unattended_upgrades)
 
       release_roles(:all).each do |host|
-        provision :template, host,
-          template: "50unattended-upgrades.erb",
-          destination: "/etc/apt/apt.conf.d/50unattended-upgrades",
-          chown: "root:root",
-          chmod: "0644",
-          sudo: true
+        server_file host, '/etc/apt/apt.conf.d/50unattended-upgrades' do
+          template "50unattended-upgrades.erb"
+          owner "root"
+          group "root"
+          mode "0644"
+        end
       end
     end
   end

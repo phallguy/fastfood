@@ -16,6 +16,7 @@ RSpec.configure do |config|
   config.order = "random"
 
   config.include Helpers::FixtureHelpers
+  config.include Fastfood::DSL
 
   config.filter_run focus: true
   config.filter_run_excluding :broken => true

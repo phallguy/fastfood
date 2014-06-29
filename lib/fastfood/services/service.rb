@@ -56,9 +56,10 @@ module Fastfood
         # classes to perform some sort of setup.
         # @param [Hash] with_env additional environment variables to set.
         def on_host( with_env = {}, &block )
+          service = self
           on host do
             with( { term: "xterm", debian_frontend: "noninteractive" }.merge( with_env ) ) do
-              instance_eval( &block )
+              Trampoline.new( service, self ).bounce &block
             end
           end
         end
@@ -68,6 +69,36 @@ module Fastfood
           franchise.service( subject, host ).run data
         end
 
+        # Supports blending class methods and host dsl methods. When `on host`
+        # is invoked, the block is executed with the host as self making it
+        # impossible to invoke other methods on the service object without keeping
+        # a reference to 'self' and making the methods public. This helper class
+        # offers a blended binding that will invoke methods on the service object
+        # first, then on the host binding.
+        class Trampoline
+          def initialize( service, host )
+            @service = service;
+            @host    = host;
+          end
+
+          def bounce(&block)
+            instance_eval(&block)
+          end
+
+          def method_missing( name, *args )
+            if @service.respond_to?( name, true )
+              return @service.send( name, *args )
+            elsif @host.respond_to?( name, true )
+              return @host.send( name, *args )
+            end
+
+            super
+          end
+
+          def respond_to?( *args )
+            @service.respond_to?( *args ) || @host.respond_to?( *args )
+          end
+        end
     end
   end
 end

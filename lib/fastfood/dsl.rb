@@ -51,13 +51,13 @@ module Fastfood
 
     # Maps the given hosts to a new array using provisioner credentials.
     def provisioned_hosts( hosts )
-      remap_hosts hosts, user: fetch(:provision_user), keys: fetch(:provision_keys)
+      _remap_hosts hosts, user: fetch(:provision_user), keys: fetch(:provision_keys)
     end
     alias_method :provisioned_host, :provisioned_hosts
 
     # Maps the given hosts to a new array using bootstrap credentials.
     def bootstrapped_hosts( hosts )
-      remap_hosts hosts, user: fetch(:bootstrap_user), keys: fetch(:bootstrap_keys)
+      _remap_hosts hosts, user: fetch(:bootstrap_user), keys: fetch(:bootstrap_keys)
     end
     alias_method :bootstrapped_host, :bootstrapped_hosts
 
@@ -66,37 +66,66 @@ module Fastfood
     # @option options [Boolean] :merge inherited data. Default true.
     def repo( path, options = {} )
       files = Fastfood.find_files( path )
-      warn_repo_missing path if files.empty? && options.fectch(:warn,true)
+      _warn_repo_missing path if files.empty? && options.fectch(:warn,true)
       files.each_with_object({}) do |file, data|
         File.open( file ) do |f|
           json = JSON.parse( f.read, symbolize_names: true )
-          deep_reverse_merge! data, json
+          _deep_reverse_merge! data, json
         end
         break data unless options[:merge]
       end
     end
 
+    # Adds a fiel to the remote server.
+    # @param [Host] host to put the file on.
+    # @param [String,Hash] options_or_destination either the destination path, or an options hash for the File service.
+    def server_file( host, options_or_destination = nil, &block )
+      options_or_destination = { destination: options_or_destination } if options_or_destination.is_a? String
+      _dsl_method host, :file, options_or_destination , &block
+    end
+
     private
 
-      def deep_reverse_merge!( original, additional )
+      def _dsl_method( host, subject, options = {}, &block )
+        provision subject, host, options.merge( DslBuilder.new.build( &block ).to_hash )
+      end
+
+      def _deep_reverse_merge!( original, additional )
         original.merge! additional do |k,o,a|
-          deep_reverse_merge! o, a if Hash === o
+          _deep_reverse_merge! o, a if Hash === o
           o
         end
       end
 
-      def remap_hosts( hosts, new_properties = {} )
+      def _remap_hosts( hosts, new_properties = {} )
         Array( hosts ).map do |host|
           host.dup.with new_properties
         end
       end
 
-      def warn_repo_missing( path )
+      def _warn_repo_missing( path )
         paths = Fastfood.file_paths.map{|p| File.join( p, path ) }
         puts "WARNING: No repo for #{path} found in #{paths}".yellow
       end
 
+      class DslBuilder
 
+        def initialize
+          @hash = {}
+        end
+
+        def build( &block )
+          instance_eval( &block )
+          self
+        end
+
+        def to_hash
+          @hash
+        end
+
+        def method_missing( name, *args )
+          @hash[name] = args.first
+        end
+      end
   end
 end
-include Fastfood::DSL
