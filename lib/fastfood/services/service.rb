@@ -54,9 +54,10 @@ module Fastfood
 
         # Perform an action with the configured host on the server. Allows base
         # classes to perform some sort of setup.
-        def on_host( &block )
+        # @param [Hash] with_env additional environment variables to set.
+        def on_host( with_env = {}, &block )
           on host do
-            with term: "term" do
+            with( { term: "xterm", debian_frontend: "noninteractive" }.merge( with_env ) ) do
               instance_eval( &block )
             end
           end
