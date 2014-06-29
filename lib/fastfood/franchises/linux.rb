@@ -14,6 +14,7 @@ module Fastfood
         register_service :swapfile         , Fastfood::Services::LinuxSwapfile
         register_service :config_change    , Fastfood::Services::ConfigChange
         register_service :file             , Fastfood::Services::LinuxFile
+        register_service :folder           , Fastfood::Services::LinuxFolder
       end
     end
   end

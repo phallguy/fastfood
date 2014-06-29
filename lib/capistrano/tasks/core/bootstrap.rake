@@ -23,9 +23,9 @@ namespace :fastfood do
 
     task :setup_folders do
       release_roles( :all ).each do |host|
-        on provisioned_host host do
-          sudo :mkdir, "-p #{fetch(:deploy_to)}"
-          sudo :chown, "-R #{host.user}:#{host.user} #{fetch(:deploy_to)}"
+        server_folder host, fetch(:deploy_to) do
+          owner host.user
+          group host.user
         end
       end
     end

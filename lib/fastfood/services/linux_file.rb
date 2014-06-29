@@ -1,37 +1,11 @@
-require 'fastfood/services/user'
-
 module Fastfood
   module Services
-    class LinuxFile < Fastfood::Services::User
+    class LinuxFile < Fastfood::Services::LinuxFileSystem
 
       private
-        def run_with_data( data )
-          upload_contents( data )
-          set_mode( data )
-          set_owner( data )
-        end
-
-        def upload_contents( data )
+        def create_destination( data )
           on_host do
-            output = prepare_contents( data )
-
-            sudo_upload! output, data[:destination]
-          end
-        end
-
-        def set_owner( data )
-          chown = ""
-          chown = "#{data[:owner]}"     if data[:owner]
-          chown += ":#{data[:group]}"   if data[:group]
-
-          on_host do
-            sudo :chown, chown, data[:destination] unless chown.empty?
-          end
-        end
-
-        def set_mode( data )
-          on_host do
-            sudo :chmod, data[:mode], data[:destination] if data[:mode]
+            sudo_upload! prepare_contents( data ), data[:destination]
           end
         end
 
