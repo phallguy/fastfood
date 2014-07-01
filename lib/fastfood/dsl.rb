@@ -113,8 +113,17 @@ module Fastfood
       end
 
       def _remap_hosts( hosts, new_properties = {} )
-        Array( hosts ).map do |host|
-          host.dup.with new_properties
+        hosts = Array( hosts )
+        if hosts.first.is_a? Symbol
+          hosts = hosts.map{|h| roles(h)}.flatten
+        end
+
+        hosts.map do |host|
+          if host.properties.all?{|k,v| new_properties[k] == v }
+            return host
+          else
+            host.dup.with new_properties
+          end
         end
       end
 

@@ -18,7 +18,7 @@ namespace :chruby do
   task :install_ruby do
     on provisioned_hosts( roles(:all) ), in: :parallel do |host|
       Array( fetch(:ruby_versions,fetch(:chruby_ruby)) ).each do |ruby_version|
-        # sudo 'ruby-install', ruby_version
+        sudo 'ruby-install', ruby_version
 
         config_change host, "/etc/gemrc" do
           changes entry: "gem: --no-rdoc --no-ri", id: "skip-documentation"
@@ -42,12 +42,14 @@ namespace :chruby do
 
 end
 
+after "fastfood:bootstrap:install_ruby", "chruby:install"
+
 namespace :load do
   task :defaults do
     unless fetch(:chruby_ruby)
       version_file = File.expand_path "../.ruby-version", ENV["BUNDLE_GEMFILE"]
       if File.exist? version_file
-        set :chruby_ruby, "#{fetch(:chruby_platform,"ruby")}-#{File.read( version_file ).strip}"
+        set :chruby_ruby, "#{fetch(:chruby_platform,"ruby")} #{File.read( version_file ).strip}"
       end
     end
   end

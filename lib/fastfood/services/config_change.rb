@@ -99,8 +99,7 @@ module Fastfood
               pattern = /(#{ln}?#{comment}\s+BEGIN FASTFOOD.*(\[#{ Regexp.escape( id ) }\]).*#{comment}\s+END FASTFOOD \2\s+#{ln}?)/m
               match   = pattern.match( contents ) || return
 
-              range = match.offset(1)
-              [range[0],range[1]-range[0]]
+              match_range( match )
             end
 
             def find_key_entry( change )
@@ -111,8 +110,12 @@ module Fastfood
               pattern   = /(^\s*#{ key }\s*#{ separator }\s*.*$)/
               match     = pattern.match( contents ) || return
 
-              range = match.offset( 0 )
-              [range[0],range[1]-range[0]]
+              match_range( match )
+            end
+
+            def match_range( match )
+              range = match.offset(1)
+              [ range[0], range[1] - range[0] ]
             end
         end
     end

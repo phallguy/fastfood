@@ -1,14 +1,14 @@
 namespace :fastfood do
   namespace :bootstrap do
-    set(:swapfile_size, 1024)
-    set(:unattended_upgrades, true)
 
     task default: [
       "fastfood:bootstrap:create_provision_user",
       "fastfood:bootstrap:swapfile",
       "fastfood:provision:users",
       "fastfood:bootstrap:setup_folders",
-      "fastfood:system:install"
+      "fastfood:system:install",
+      "fastfood:bootstrap:install_ruby",
+      "fastfood:bootstrap:install_client"
       ] do
     end
 
@@ -49,8 +49,33 @@ namespace :fastfood do
         end
       end
     end
+
+    task :install_ruby do
+      # Each VM hooks onto this to make sure it's installed with the server
+    end
+
+    task :install_client do
+      on provisioned_hosts(:all) do |host|
+        provision :folder_bundle, host,
+          source: File.expand_path( "../../../../fastfood/client", __FILE__ ),
+          destination: fetch(:fastfood_folder),
+          owner: "root",
+          group: "root",
+          mode: "0600"
+      end
+    end
+
   end
 
   desc "Prepare a server for running capistrano tasks"
   task bootstrap: "fastfood:bootstrap:default"
+end
+
+
+namespace :load do
+  namespace :defaults do
+    set(:swapfile_size, 1024)
+    set(:unattended_upgrades, true)
+    set(:fastfood_folder, "/opt/fastfood")
+  end
 end

@@ -15,6 +15,7 @@ module Fastfood
         register_service :config_change    , Fastfood::Services::ConfigChange
         register_service :file             , Fastfood::Services::LinuxFile
         register_service :folder           , Fastfood::Services::LinuxFolder
+        register_service :folder_bundle    , Fastfood::Services::LinuxFolderBundle
       end
     end
   end

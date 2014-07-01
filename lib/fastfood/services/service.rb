@@ -93,9 +93,9 @@ module Fastfood
             end
 
             super
-          rescue StandardError => e
-            binding.pry
-            raise
+          rescue ::StandardError => e
+            ::Kernel.binding.pry
+            ::Kernel.fail
           end
 
           def respond_to?( *args )
