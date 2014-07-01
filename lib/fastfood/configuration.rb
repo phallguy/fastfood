@@ -17,6 +17,23 @@ module Fastfood
       set :system_packages, packages
     end
 
+    # Set the fastfood franchise to use.
+    def franchise( name )
+      require "capistrano/fastfood/franchises/#{name}"
+    end
+
+    # Use defaults for a given cloud platform.
+    def cloud( name )
+      require "capistrano/fastfood/clouds/#{name}"
+    end
+
+    # Include the named fastfood services.
+    def services( *names )
+      names.flatten.compact.each do |name|
+        require File.join( "capistrano/fastfood", name )
+      end
+    end
+
     def fetch( *args )
       env.fetch( *args )
     end

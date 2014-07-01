@@ -75,7 +75,7 @@ module Fastfood
         # a reference to 'self' and making the methods public. This helper class
         # offers a blended binding that will invoke methods on the service object
         # first, then on the host binding.
-        class Trampoline
+        class Trampoline < BasicObject
           def initialize( service, host )
             @service = service;
             @host    = host;
@@ -85,14 +85,17 @@ module Fastfood
             instance_eval(&block)
           end
 
-          def method_missing( name, *args )
-            if @service.respond_to?( name, true )
-              return @service.send( name, *args )
-            elsif @host.respond_to?( name, true )
-              return @host.send( name, *args )
+          def method_missing( name, *args, &block )
+            if @host.respond_to?( name, true )
+              return @host.send( name, *args, &block )
+            elsif @service.respond_to?( name, true )
+              return @service.send( name, *args, &block )
             end
 
             super
+          rescue StandardError => e
+            binding.pry
+            raise
           end
 
           def respond_to?( *args )

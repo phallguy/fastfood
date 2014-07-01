@@ -10,13 +10,17 @@ module Fastfood
       private
 
         def run_with_data( data )
-          write_config_file( Change.new( read_config_file( data ), data ).make_changes, data )
+          write_config_file( Change.new( read_config_file( data ), data ).change, data )
         end
 
         def read_config_file( data )
-          contents = nil
+          contents = ""
+          file     = data.fetch(:file)
+
           on_host do
-            contents = download! data.fetch(:file)
+            if test( "[ -f #{file} ]" )
+              contents = download! file
+            end
           end
 
           contents
@@ -40,7 +44,7 @@ module Fastfood
             @changes  = Array(@changes)
           end
 
-          def make_changes
+          def change
             changes.each do |change|
               case
               when change[:entry] then change_entry( change )
@@ -65,7 +69,12 @@ module Fastfood
             def change_entry( change )
               range = find_fastfood_block( change.fetch(:id) ) || [-1]
 
-              @contents[*range] = format_block( change.fetch(:id), change.fetch(:entry) )
+              block = format_block( change.fetch(:id), change.fetch(:entry) )
+              if @contents.length > 0
+                @contents[*range] = block
+              else
+                @contents = block
+              end
             end
 
             def change_key( change )

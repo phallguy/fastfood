@@ -92,6 +92,13 @@ module Fastfood
       _dsl_method host, :folder, options_or_destination , &block
     end
 
+    # Makes a change in a config file.
+    # @param [Host] host to put the folder on.
+    # @param [String,Hash] options_or_config_file either the config file path, or an options hash for the ConfigChange service.
+    def config_change( host, options_or_config_file = nil, &block )
+      _dsl_method host, :config_change, { file: options_or_config_file }, &block
+    end
+
     private
 
       def _dsl_method( host, subject, options = {}, &block )
