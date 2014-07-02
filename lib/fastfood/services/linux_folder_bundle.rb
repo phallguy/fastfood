@@ -5,7 +5,10 @@ module Fastfood
       private
         def create_destination( data )
           on_host do
-           bundle_folder( data[:source], data[:destination], data )
+            manifest.select :bundle do |manifest|
+              bundle_folder( data[:source], data[:destination], data )
+              manifest[:version] = Time.now
+            end
           end
         end
 

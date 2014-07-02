@@ -1,5 +1,6 @@
 # Fastfood
 
+[![Gem Version](https://badge.fury.io/rb/fastfood.svg)](http://badge.fury.io/rb/fastfood)
 [![Code Climate](https://codeclimate.com/github/phallguy/fastfood.png)](https://codeclimate.com/github/phallguy/fastfood)
 
 Because sometimes you just gotta eat and don't have time for chefs.

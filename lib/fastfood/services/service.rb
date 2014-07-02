@@ -4,6 +4,8 @@ module Fastfood
     # adding users, etc.
     class Service
 
+      include Fastfood::Trampoline
+
       # @return [Capistrano::Configuration::Server] the host that the service
       #   will perform it's actions on.
       attr_reader :host
@@ -27,6 +29,10 @@ module Fastfood
       end
 
       protected
+
+        def manifest
+          @manifest ||= Fastfood::Manifest.new( host, File.join( fetch(:fastfood_folder), "manifest" ) )
+        end
 
         # Determines if the service should run with the given options.
         # @option options [Array<Symbol,String>] roles we're limited to.
@@ -59,7 +65,7 @@ module Fastfood
           service = self
           on host do
             with( { term: "xterm", debian_frontend: "noninteractive" }.merge( with_env ) ) do
-              Trampoline.new( service, self ).bounce &block
+              Fastfood::Trampoline::Spring.new(  service, self ).bounce &block
             end
           end
         end
@@ -69,39 +75,7 @@ module Fastfood
           franchise.service( subject, host ).run data
         end
 
-        # Supports blending class methods and host dsl methods. When `on host`
-        # is invoked, the block is executed with the host as self making it
-        # impossible to invoke other methods on the service object without keeping
-        # a reference to 'self' and making the methods public. This helper class
-        # offers a blended binding that will invoke methods on the service object
-        # first, then on the host binding.
-        class Trampoline < BasicObject
-          def initialize( service, host )
-            @service = service;
-            @host    = host;
-          end
 
-          def bounce(&block)
-            instance_eval(&block)
-          end
-
-          def method_missing( name, *args, &block )
-            if @host.respond_to?( name, true )
-              return @host.send( name, *args, &block )
-            elsif @service.respond_to?( name, true )
-              return @service.send( name, *args, &block )
-            end
-
-            super
-          rescue ::StandardError => e
-            ::Kernel.binding.pry
-            ::Kernel.fail
-          end
-
-          def respond_to?( *args )
-            @service.respond_to?( *args ) || @host.respond_to?( *args )
-          end
-        end
     end
   end
 end

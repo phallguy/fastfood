@@ -6,7 +6,9 @@ module Fastfood
   autoload :Configuration , 'fastfood/configuration'
   autoload :DSL           , 'fastfood/dsl'
   autoload :Franchises    , 'fastfood/franchises'
+  autoload :Manifest      , 'fastfood/manifest'
   autoload :Services      , 'fastfood/services'
+  autoload :Trampoline    , 'fastfood/trampoline'
 
   module_function
 
