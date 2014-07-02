@@ -63,6 +63,7 @@ namespace :fastfood do
           owner: "root",
           group: "root",
           mode: "0600",
+          force: true,
           version: Fastfood::VERSION
       end
     end
