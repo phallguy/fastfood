@@ -15,3 +15,5 @@ gem 'foreman'
 gem 'yard'
 gem 'redcarpet'
 gem 'simplecov', github: "colszowka/simplecov"
+
+gem "codeclimate-test-reporter", group: :test, require: nil

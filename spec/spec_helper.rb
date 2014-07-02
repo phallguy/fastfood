@@ -1,5 +1,10 @@
 require 'simplecov'
-SimpleCov.start
+if ENV['COVERAGE']
+  require "codeclimate-test-reporter"
+  CodeClimate::TestReporter.start
+else
+  SimpleCov.start
+end
 
 require 'capistrano/all'
 require 'fastfood'
