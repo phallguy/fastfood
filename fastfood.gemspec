@@ -5,7 +5,7 @@ require 'fastfood/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "fastfood"
-  spec.version       = "#{Fastfood::VERSION}pre"
+  spec.version       = "#{Fastfood::VERSION}"
   spec.authors       = ["Paul Alexander"]
   spec.email         = ["me@phallguy.com"]
   spec.summary       = %q{Because sometimes you just gotta eat and don't have time for chefs.}
@@ -23,6 +23,7 @@ setting up Chef to provision just a few servers for a small project.}
   spec.required_ruby_version = '>= 2'
 
   spec.add_dependency 'capistrano', '~> 3.0'
+  spec.add_dependency 'hashie', '~> 2.1.2'
 
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake", '~> 10'

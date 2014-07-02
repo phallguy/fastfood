@@ -49,6 +49,15 @@ module Fastfood
       sudo :rm, "-f", tmp
     end
 
+    # Download a file using a temp folder then sudo mv to the destination.
+    def sudo_download!( destination )
+      tmp = "/tmp/#{SecureRandom.uuid}"
+      sudo :ln, "-f", destination, tmp
+      download! tmp
+    ensure
+      sudo :rm, "-f", tmp
+    end
+
     # Maps the given hosts to a new array using provisioner credentials.
     def provisioned_hosts( hosts )
       _remap_hosts hosts, user: fetch(:provision_user), keys: fetch(:provision_keys)

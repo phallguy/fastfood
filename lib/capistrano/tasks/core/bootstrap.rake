@@ -57,11 +57,13 @@ namespace :fastfood do
     task :install_client do
       on provisioned_hosts(:all) do |host|
         provision :folder_bundle, host,
+          id: "fastfood_client",
           source: File.expand_path( "../../../../fastfood/client", __FILE__ ),
           destination: fetch(:fastfood_folder),
           owner: "root",
           group: "root",
-          mode: "0600"
+          mode: "0600",
+          version: Fastfood::VERSION
       end
     end
 

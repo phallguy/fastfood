@@ -26,7 +26,7 @@ module Fastfood
       bucket = find_bucket( bucket_name )
       if block_given?
         yield bucket
-        save_bucket bucket_name, bucket
+        save_bucket bucket_name, bucket if bucket.dirty?
       else
         bucket
       end
@@ -49,10 +49,10 @@ module Fastfood
 
         unless bucket = buckets[bucket_name]
           on_trampoline host do
-            bucket = if test("[ -f #{path} ]")
-              buckets[bucket_name] = JSON.parse( download! path_for_bucket( bucket_name ) )
+            bucket = if test("sudo [ -f #{path} ]")
+              buckets[bucket_name] = Bucket.new( JSON.parse( sudo_download! path_for_bucket( bucket_name ) ) )
             else
-              {}
+              Bucket.new
             end
           end
         end
@@ -63,7 +63,7 @@ module Fastfood
       def save_bucket( bucket_name, bucket )
         path = path_for_bucket( bucket_name )
         on_trampoline host do
-          sudo :mkdir, "-p #{path}"
+          sudo :mkdir, "-p #{File.dirname( path )}"
           sudo_upload! StringIO.new( JSON.pretty_generate( bucket ) ), path
         end
       end
@@ -75,3 +75,5 @@ module Fastfood
 
   end
 end
+
+require 'fastfood/manifest/bucket'

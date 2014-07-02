@@ -5,9 +5,11 @@ module Fastfood
       private
         def create_destination( data )
           on_host do
-            manifest.select :bundle do |manifest|
+            manifest.select data.fetch(:id) do |manifest|
+              next unless manifest.older?( data.fetch(:version) ) || data[:force]
+
               bundle_folder( data[:source], data[:destination], data )
-              manifest[:version] = Time.now
+              manifest[:version] = data[:version]
             end
           end
         end

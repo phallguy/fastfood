@@ -36,7 +36,7 @@ module Fastfood
 
         super
       rescue ::StandardError => e
-        ::Kernel.binding.pry
+        # ::Kernel.binding.pry
         ::Kernel.fail
       end
 

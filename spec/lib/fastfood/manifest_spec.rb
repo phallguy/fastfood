@@ -13,6 +13,7 @@ describe Fastfood::Manifest do
     {
       "users" => "users.json",
       "packages/git" => "packages/git.json",
+      :bundle => "bundle.json"
     }.each do |name,expected|
 
       it "returns #{expected} for #{name}" do
@@ -33,7 +34,7 @@ describe Fastfood::Manifest do
     end
 
     it "gets a hash" do
-      expect( manifest.find_bucket( :users ) ).to be_a Hash
+      expect( manifest.find_bucket( :users ) ).to be_a Fastfood::Manifest::Bucket
     end
   end
 
@@ -53,7 +54,7 @@ describe Fastfood::Manifest do
 
   describe "#select" do
     before(:each) do
-      expect(manifest).to receive(:find_bucket).and_return({})
+      expect(manifest).to receive(:find_bucket).and_return(Fastfood::Manifest::Bucket.new.dirty!)
       expect(manifest).to receive(:save_bucket)
     end
 
