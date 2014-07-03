@@ -7,24 +7,29 @@ namespace :chruby do
     roles(:all).each do |host|
       provision :source_installer, host,
         source: "https://github.com/postmodern/chruby/archive/v0.3.8.tar.gz",
-        sha: "320d13bacafeae72631093dba1cd5526147d03cc"
+        sha: "320d13bacafeae72631093dba1cd5526147d03cc",
+        version: "0.3.8"
 
       provision :source_installer, host,
         source: "https://github.com/postmodern/ruby-install/archive/v0.4.3.tar.gz",
-        sha: "be7dd5ad558102ab812addd3100a91c9812d0317"
+        sha: "be7dd5ad558102ab812addd3100a91c9812d0317",
+        version: "0.4.3"
     end
   end
 
   task :install_ruby do
     on provisioned_hosts( roles(:all) ), in: :parallel do |host|
-      Array( fetch(:ruby_versions,fetch(:chruby_ruby)) ).each do |ruby_version|
-        sudo 'ruby-install', ruby_version
+      manifest = host_manifest( host )
+      manifest.select( :ruby_install ) do |bucket|
+        Array( fetch(:ruby_versions,fetch(:chruby_ruby)) ).each do |ruby_version|
+          sudo 'ruby-install', ruby_version, "--no-reinstall"
 
-        config_change host, "/etc/gemrc" do
-          changes entry: "gem: --no-rdoc --no-ri", id: "skip-documentation"
+          config_change host, "/etc/gemrc" do
+            changes entry: "gem: --no-rdoc --no-ri", id: "skip-documentation"
+          end
+
+          execute "/usr/local/bin/chruby-exec #{ruby_version} -- gem install bundler"
         end
-
-        execute "/usr/local/bin/chruby-exec #{ruby_version} -- gem install bundler"
       end
     end
   end

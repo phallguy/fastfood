@@ -6,9 +6,15 @@ module Fastfood
         def run_with_data( data )
           tmp_path = "~/sources/#{SecureRandom.uuid}"
 
-          download_source  tmp_path , data
-          verify_signature tmp_path , data
-          make             tmp_path , data
+          manifest.select( data[:source] ) do |bucket|
+            next unless bucket.older?( data.fetch(:version) )
+
+            bucket[:version] = data[:version]
+
+            download_source  tmp_path , data
+            verify_signature tmp_path , data
+            make             tmp_path , data
+          end
 
         ensure
           cleanup          tmp_path , data

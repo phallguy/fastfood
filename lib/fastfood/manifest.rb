@@ -69,8 +69,12 @@ module Fastfood
       end
 
       def path_for_bucket( bucket_name )
-        folders = bucket_name.to_s.split(/\//)
-        File.join( @bucket_path, *folders[0..-2], "#{folders[-1]}.json" )
+        parts = bucket_name.to_s.split(/\//).map{|c| safe_file_component_name c}
+        File.join( @bucket_path, *parts[0..-2], "#{parts[-1]}.json" )
+      end
+
+      def safe_file_component_name( name )
+        name.gsub( /[^a-z0-9\.\-]+/i, '_' ).gsub(/_$/,'')
       end
 
   end

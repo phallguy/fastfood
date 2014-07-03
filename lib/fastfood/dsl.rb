@@ -108,6 +108,11 @@ module Fastfood
       _dsl_method host, :config_change, { file: options_or_config_file }, &block
     end
 
+    # Gets a manifest manager for the given host.
+    def host_manifest( host )
+      Fastfood::Manifest.new( host, File.join( fetch(:fastfood_folder), "manifest" ) )
+    end
+
     private
 
       def _dsl_method( host, subject, options = {}, &block )
