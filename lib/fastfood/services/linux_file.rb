@@ -1,9 +1,10 @@
 module Fastfood
   module Services
     class LinuxFile < Fastfood::Services::LinuxFileSystem
-
       private
+
         def create_destination( data )
+          return unless data[:contents] || data[:template]
           on_host do
             sudo_upload! prepare_contents( data ), data[:destination]
           end

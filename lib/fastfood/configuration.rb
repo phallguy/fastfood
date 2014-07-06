@@ -4,14 +4,25 @@ module Fastfood
   module Configuration
     module_function
 
-    # Declare a required system package.
-    # @param [Array<String>,String] package_names to install on the target host.
+    # @param [Array<String>,String,Hash] new_packages to install on the target host.
     # @option options [Array<Symbol>,Symbol] :roles to install the packages on.
-    def package( package_names, options = {} )
-      packages = fetch( :system_packages, {} )
-      package_names = Array( package_names ).map &:to_s
+    #
+    # Declare a required system package.
+    #
+    # When **new_packages** is a string, or array of strings, fastfood will simply
+    # install the package with the given name using the default options.
+    #
+    # When **new_package** is a hash, the key is the name of the package and the
+    # keys are additional values understood vy the package installer such as
+    # version, or repoisitory address.
+    def package( *new_packages )
+      packages = fetch( :system_packages, { all: {} } )
+      options  = new_packages.pop if new_packages.length > 1 && new_packages.last.is_a?( Hash )
+      options  ||= {}
+
+      new_packages = _map_packages( new_packages )
       Array( options.fetch( :roles, :all ) ).each do |role|
-        packages[role.to_sym] = packages.fetch( role.to_sym, Set.new ) + package_names
+        packages[role.to_sym] = packages.fetch( role.to_sym, {} ).merge new_packages
       end
 
       set :system_packages, packages
@@ -44,6 +55,17 @@ module Fastfood
 
     def env
       Capistrano::Configuration.env
+    end
+
+    def _map_packages( packages )
+      packages.each_with_object( {} ) do |package, mapped|
+        case package
+        when Hash then mapped.merge! package
+        when String,Symbol  then mapped[package.to_sym] = true
+        when Array then mapped.merge!( _map_packages( package ) )
+        else fail "Not sure what to do with #{package}."
+        end
+      end
     end
 
   end
