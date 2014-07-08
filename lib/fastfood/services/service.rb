@@ -64,7 +64,7 @@ module Fastfood
         def on_host( with_env = {}, &block )
           service = self
           on host do
-            with( { term: "xterm", debian_frontend: "noninteractive" }.merge( with_env ) ) do
+            with( { debian_frontend: "noninteractive" }.merge( with_env ) ) do
               Fastfood::Trampoline::Spring.new(  service, self ).bounce &block
             end
           end

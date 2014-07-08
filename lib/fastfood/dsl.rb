@@ -51,11 +51,12 @@ module Fastfood
 
     # Download a file using a temp folder then sudo mv to the destination.
     def sudo_download!( destination )
-      tmp = "/tmp/#{SecureRandom.uuid}"
-      sudo :ln, "-f", destination, tmp
-      download! tmp
+      mode = capture( :stat, "-c '%a'", destination ).strip
+
+      sudo :chmod, "a+r", destination
+      download! destination
     ensure
-      sudo :rm, "-f", tmp
+      sudo :chmod, mode, destination
     end
 
     # Maps the given hosts to a new array using provisioner credentials.

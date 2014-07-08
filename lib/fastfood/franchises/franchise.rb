@@ -13,13 +13,15 @@ module Fastfood
         end
       end
 
+      def register_service( subject, service )
+        services[subject] = service
+      end
+
       private
 
         attr_reader :services
 
-        def register_service( subject, service )
-          services[subject] = service
-        end
+
     end
   end
 end

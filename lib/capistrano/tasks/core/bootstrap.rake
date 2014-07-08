@@ -1,3 +1,15 @@
+namespace :load do
+  namespace :defaults do
+    set(:swapfile_size, 1024)
+    set(:unattended_upgrades, true)
+    set(:fastfood_folder, "/opt/fastfood")
+
+    # Make sure sudo knows it's non-interactive and won't prompt for password
+    # if its required. Just fail.
+    SSHKit.config.command_map[:sudo] = "#{SSHKit.config.command_map[:sudo]} -n"
+  end
+end
+
 namespace :fastfood do
   namespace :bootstrap do
 
@@ -5,15 +17,15 @@ namespace :fastfood do
       "fastfood:bootstrap:create_provision_user",
       "fastfood:bootstrap:swapfile",
       "fastfood:provision:users",
-      "fastfood:bootstrap:setup_folders",
       "fastfood:system:install",
       "fastfood:bootstrap:install_ruby",
       "fastfood:bootstrap:install_client"
       ] do
     end
 
+    # Makes sure that the user to be used for provisioning exists on the server.
+    # Must have access to the bootstrap keys for root login.
     task :create_provision_user do
-      puts "Ensuring provisioning user exists"
       roles(:all).each do |host|
         bootstrap :user,
                   host,
@@ -21,22 +33,17 @@ namespace :fastfood do
       end
     end
 
-    task :setup_folders do
-      release_roles( :all ).each do |host|
-        server_folder host, fetch(:deploy_to) do
-          owner host.user
-          group host.user
-        end
-      end
-    end
-
+    # Setup a swap file
     task :swapfile do
-      swapfile_size = fetch(:swapfile_size,0).to_i
+      swapfile_size = fetch( :swapfile_size, 0 ).to_i
+      next if swapfile_size == 0
+
       roles(:all).each do |host|
         provision :swapfile, host, size: swapfile_size
       end
     end
 
+    # Make sure the system stays up-to-date for security patches.
     task :unattended_upgrades do
       next unless fetch(:unattended_upgrades)
 
@@ -54,6 +61,8 @@ namespace :fastfood do
       # Each VM hooks onto this to make sure it's installed with the server
     end
 
+    # Install the fastfood client on the server.
+    # TODO: make it useful.
     task :install_client do
       on provisioned_hosts(:all) do |host|
         provision :folder_bundle, host,
@@ -74,11 +83,4 @@ namespace :fastfood do
   task bootstrap: "fastfood:bootstrap:default"
 end
 
-
-namespace :load do
-  namespace :defaults do
-    set(:swapfile_size, 1024)
-    set(:unattended_upgrades, true)
-    set(:fastfood_folder, "/opt/fastfood")
-  end
-end
+task :setup => "fastfood:bootstrap"
