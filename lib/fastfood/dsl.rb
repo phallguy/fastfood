@@ -30,14 +30,14 @@ module Fastfood
       end
     end
 
-    # Execute the given command as sudo
-    def sudo( *args )
-      if args.first.is_a? Symbol
-        args = args.dup
-        args[0] = SSHKit.config.command_map[args[0]]
-      end
-      execute :sudo, *args
-    end
+    # # Execute the given command as sudo
+    # def sudo( *args )
+    #   if args.first.is_a? Symbol
+    #     args = args.dup
+    #     args[0] = SSHKit.config.command_map[args[0]]
+    #   end
+    #   execute :sudo, *args
+    # end
 
     # Upload a file using a temp folder then sudo mv to the destination.
     def sudo_upload!( io, destination )
@@ -51,11 +51,12 @@ module Fastfood
 
     # Download a file using a temp folder then sudo mv to the destination.
     def sudo_download!( destination )
-      tmp = "/tmp/#{SecureRandom.uuid}"
-      sudo :ln, "-f", destination, tmp
-      download! tmp
+      mode = capture( :stat, "-c '%a'", destination ).strip
+
+      sudo :chmod, "a+r", destination
+      download! destination
     ensure
-      sudo :rm, "-f", tmp
+      sudo :chmod, mode, destination
     end
 
     # Maps the given hosts to a new array using provisioner credentials.
@@ -115,7 +116,8 @@ module Fastfood
 
     private
 
-      def _dsl_method( host, subject, options = {}, &block )
+      def _dsl_method( host, subject, options, &block )
+        options ||= {}
         provision subject, host, options.merge( DslBuilder.new.build( &block ).to_hash )
       end
 

@@ -1,5 +1,5 @@
 namespace :chruby do
-  task :install => ["chruby:install_chruby","chruby:install_ruby","chruby:autoload"] do
+  task :install => ["chruby:install_chruby","chruby:autoload","chruby:install_ruby"] do
 
   end
 
@@ -8,7 +8,15 @@ namespace :chruby do
       provision :source_installer, host,
         source: "https://github.com/postmodern/chruby/archive/v0.3.8.tar.gz",
         sha: "320d13bacafeae72631093dba1cd5526147d03cc",
-        version: "0.3.8"
+        version: "0.3.8",
+        force: true
+
+      server_file host, "/usr/local/share/chruby/chruby.sh" do
+        mode "0755"
+      end
+      server_file host, "/usr/local/share/chruby/auto.sh" do
+        mode "0755"
+      end
 
       provision :source_installer, host,
         source: "https://github.com/postmodern/ruby-install/archive/v0.4.3.tar.gz",

@@ -1,0 +1,9 @@
+<%= fetch(:stage) %>:
+  adapter: postgresql
+  encoding: unicode
+  pool: 50
+  timeout: 5000
+  database: <%= fetch(:pg_database) %>
+  username: <%= fetch(:pg_user) %>
+  host: <%= fetch(:pg_host) %>
+  password: <%= fetch(:pg_password) %>

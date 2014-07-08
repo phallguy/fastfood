@@ -23,6 +23,7 @@ module Fastfood
     autoload :LinuxFileSystem   , 'fastfood/services/linux_file_system'
     autoload :LinuxFolder       , 'fastfood/services/linux_folder'
     autoload :LinuxFolderBundle , 'fastfood/services/linux_folder_bundle'
+    autoload :Postgres          , 'fastfood/services/postgres'
     autoload :Service           , 'fastfood/services/service'
     autoload :SourceInstaller   , 'fastfood/services/source_installer'
     autoload :User              , 'fastfood/services/user'

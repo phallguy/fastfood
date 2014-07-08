@@ -7,7 +7,7 @@ module Fastfood
           tmp_path = "~/sources/#{SecureRandom.uuid}"
 
           manifest.select( data[:source] ) do |bucket|
-            next unless bucket.older?( data.fetch(:version) )
+            next unless bucket.older?( data.fetch(:version) ) || data[:force]
 
             bucket[:version] = data[:version]
 

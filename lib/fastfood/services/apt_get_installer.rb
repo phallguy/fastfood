@@ -28,17 +28,38 @@ module Fastfood
           packages = packages_for_host( packages )
           on_host do
             # Ignore dpkg-preconfigure: unable to re-open stdin: No such file or directory
-            sudo :'apt-get', "-y install #{packages.join(" ")} 2> /dev/null"
+            sudo :'apt-get', "-y install #{ packages_to_command( packages ) } 2> /dev/null"
           end
         end
 
         def packages_for_host( packages )
-          blended = packages.fetch( :all, [] )
+          blended = packages.fetch( :all, {} ).dup
           host.roles.each do |role|
-            blended += packages.fetch( role, [] )
+            blended.merge! packages.fetch( role, {} )
           end
 
-          blended.to_a
+          blended
+        end
+
+        def packages_to_command( packages )
+          packages.each_with_object([]) do |(key,value),commands|
+            next if value == false
+
+            commands << package_to_command( key, value )
+          end.join(" ")
+        end
+
+        def package_to_command( key, value )
+          command = [key]
+
+          if value.is_a? Hash
+            if version = value[:version]
+              command << "="
+              command << value[:version]
+            end
+          end
+
+          command.join('')
         end
 
     end
