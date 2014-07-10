@@ -10,4 +10,4 @@ namespace :load do
 end
 
 desc "Setup a new server"
-task :setup
+task setup: [:settingup]

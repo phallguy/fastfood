@@ -1,9 +1,7 @@
 namespace :postgresql do
 
   desc "Installs PostgreSQL on the DB server"
-  task :install => ["fastfood:system:install_packages"] do
-
-  end
+  task :install => ["fastfood:system:install_packages"]
 
   desc "Install and configure postgresql"
   task :setup => [:install,:create_db]
@@ -52,6 +50,11 @@ namespace :load do
     fastfood do
       package "postgresql-client", roles: :all
       package "postgresql", "postgresql-contrib", roles: :db
+
+      firewall do
+        well_known :sql, 5432
+        allow      :sql, on: :db, from: :app
+      end
     end
 
     set :pg_database,     -> { "#{ fetch(:safe_application) }_#{fetch(:stage)}" }

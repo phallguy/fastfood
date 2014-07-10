@@ -9,7 +9,6 @@ end
 require 'capistrano/all'
 require 'fastfood'
 
-
 root_path = File.expand_path( "../..", __FILE__ )
 
 # Requires supporting ruby files with custom matchers and macros, etc,
@@ -30,6 +29,4 @@ RSpec.configure do |config|
   config.before(:each)  { GC.disable }
   config.after(:each)   { GC.enable }
 
-
 end
-

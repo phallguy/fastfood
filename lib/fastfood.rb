@@ -4,10 +4,11 @@ require 'pry'
 
 module Fastfood
 
-  autoload :Configuration , 'fastfood/configuration'
-  autoload :DSL           , 'fastfood/dsl'
-  autoload :Manifest      , 'fastfood/manifest'
-  autoload :Trampoline    , 'fastfood/trampoline'
+  autoload :Configuration         , 'fastfood/configuration'
+  autoload :FirewallConfiguration , 'fastfood/firewall_configuration'
+  autoload :DSL                   , 'fastfood/dsl'
+  autoload :Manifest              , 'fastfood/manifest'
+  autoload :Trampoline            , 'fastfood/trampoline'
 
   module Franchises
     autoload :Franchise , 'fastfood/Franchises/franchise'
@@ -26,6 +27,7 @@ module Fastfood
     autoload :Postgres          , 'fastfood/services/postgres'
     autoload :Service           , 'fastfood/services/service'
     autoload :SourceInstaller   , 'fastfood/services/source_installer'
+    autoload :UfwFirewall       , 'fastfood/services/ufw_firewall'
     autoload :User              , 'fastfood/services/user'
   end
 

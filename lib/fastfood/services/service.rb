@@ -37,7 +37,7 @@ module Fastfood
         # Determines if the service should run with the given options.
         # @option options [Array<Symbol,String>] roles we're limited to.
         def should_run?( options )
-          if roles = options[:roles]
+          if roles = Array( options[:roles] )
             return false unless roles.any?{ |r| host.has_role? r }
           end
 

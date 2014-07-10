@@ -10,7 +10,7 @@ module Fastfood
     attr_accessor :host
 
     # @param [Host] host to track data on.
-    # @param [String] path on the host to store manifest buckets in.
+    # @param [String] bucket_path on the host to store manifest buckets in.
     def initialize( host, bucket_path )
       @host = host
       @bucket_path = bucket_path
@@ -49,8 +49,8 @@ module Fastfood
 
         unless bucket = buckets[bucket_name]
           on_trampoline host do
-            bucket = if test("sudo [ -f #{path} ]")
-              buckets[bucket_name] = Bucket.new( JSON.parse( sudo_download! path_for_bucket( bucket_name ) ) )
+            bucket = if test( :sudo, "[ -f #{path} ]" )
+              buckets[bucket_name] = Bucket.new( JSON.parse( sudo_download! path ) )
             else
               Bucket.new
             end
@@ -62,6 +62,7 @@ module Fastfood
 
       def save_bucket( bucket_name, bucket )
         path = path_for_bucket( bucket_name )
+        bucket_path = @bucket_path
         on_trampoline host do
           sudo :mkdir, "-p #{File.dirname( path )}"
           sudo_upload! StringIO.new( JSON.pretty_generate( bucket ) ), path

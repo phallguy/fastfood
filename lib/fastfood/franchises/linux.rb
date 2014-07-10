@@ -16,6 +16,7 @@ module Fastfood
         register_service :file             , Fastfood::Services::LinuxFile
         register_service :folder           , Fastfood::Services::LinuxFolder
         register_service :folder_bundle    , Fastfood::Services::LinuxFolderBundle
+        register_service :firewall         , Fastfood::Services::UfwFirewall
       end
     end
   end
