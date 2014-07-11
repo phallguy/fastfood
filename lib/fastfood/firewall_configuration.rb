@@ -44,8 +44,8 @@ module Fastfood
         _command :deny, *args
       end
 
-      def default( *args )
-        _rules << { command: :default, args: args.map(&:to_s).join(" ") }
+      def default( allow_or_deny, options = {} )
+        _rules << _command_options( options ).merge!(  command: :default, args: allow_or_deny )
       end
 
       def custom( args )
@@ -81,17 +81,23 @@ module Fastfood
       end
 
       def _port_command( name, port, options )
-        cmd = {
+        cmd = _command_options( options ).merge! \
           command: name,
-          roles: Array(  options[:on] ) + Array( options[:to] ) + Array( options[:roles] ),
           protocol: options[:protocol] ? Array( options[:protocol] ) : nil,
           from: Array(options[:from] || :any)
-        }
 
-        cmd[:roles]   = [:all] unless cmd[:roles].any?
         cmd[:port] = _port( port ) if port
 
         _rules << cmd
+      end
+
+      def _command_options( options )
+        cmd = {
+          roles: Array(  options[:on] ) + Array( options[:to] ) + Array( options[:roles] ),
+        }
+
+        cmd[:roles]   = [:all] unless cmd[:roles].any?
+        cmd
       end
 
       def _rules
