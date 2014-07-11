@@ -45,10 +45,10 @@ module Fastfood
           on_host do
             within tmp_path do
               execute :tar, "--strip-components 1 -xzvf source.tgz"
-              within data[:make] do
-                execute :make
-                sudo :make, "install"
-              end
+              break if data[:before_make] && ! instance_exec( data, &data[:before_make] )
+              execute :make
+              sudo :make, "install"
+              instance_exec( data, &data[:after_make] ) if data[:after_make]
             end
           end
         end

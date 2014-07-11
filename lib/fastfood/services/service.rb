@@ -38,7 +38,7 @@ module Fastfood
         # @option options [Array<Symbol,String>] roles we're limited to.
         def should_run?( options )
           if roles = Array( options[:roles] )
-            return false unless roles.any?{ |r| host.has_role? r }
+            return false unless roles.any?{ |r| r == :all || host.has_role?( r ) }
           end
 
           true

@@ -8,8 +8,7 @@ namespace :chruby do
       provision :source_installer, host,
         source: "https://github.com/postmodern/chruby/archive/v0.3.8.tar.gz",
         sha: "320d13bacafeae72631093dba1cd5526147d03cc",
-        version: "0.3.8",
-        force: true
+        version: "0.3.8"
 
       server_file host, "/usr/local/share/chruby/chruby.sh" do
         mode "0755"
