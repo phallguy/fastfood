@@ -55,7 +55,7 @@ namespace :chruby do
 
 end
 
-after "fastfood:bootstrap:install_ruby", "chruby:install"
+task "fastfood:bootstrap:install_ruby" => "chruby:install"
 
 namespace :load do
   task :defaults do

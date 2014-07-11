@@ -28,6 +28,20 @@ module Fastfood
       set :system_packages, packages
     end
 
+    # Declare firewall rules.
+    # @see Fastfood::FirewallConfiguration
+    #
+    # @example
+    #     fastfood do
+    #       firewall do
+    #         allow :http, on: :web
+    #       end
+    #     end
+    def firewall( &block )
+      firewall_config = FirewallConfiguration.new fetch( :firewall_config, {} )
+      set :firewall_config, firewall_config.build( &block )
+    end
+
     # Set the fastfood franchise to use.
     def franchise( name )
       require "capistrano/fastfood/franchises/#{name}"

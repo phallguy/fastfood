@@ -1,0 +1,1 @@
+Fastfood.load_task "firewall"

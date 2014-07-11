@@ -71,7 +71,7 @@ namespace :fastfood do
           destination: fetch(:fastfood_folder),
           owner: "root",
           group: "root",
-          mode: "0600",
+          mode: "0611",
           force: true,
           version: Fastfood::VERSION
       end
@@ -83,4 +83,5 @@ namespace :fastfood do
   task bootstrap: "fastfood:bootstrap:default"
 end
 
-task :setup => "fastfood:bootstrap"
+task :settingup => "fastfood:bootstrap"
+task "deploy:check" => "fastfood:install_client"
