@@ -14,7 +14,7 @@ describe Fastfood::Services::AptGetInstaller do
   end
 
   it "uses packages only for the target host" do
-    expect(installer).to receive :packages_for_host
+    expect(installer).to receive( :packages_for_host ).and_return([])
     installer.run packages: { all: {} }
   end
 

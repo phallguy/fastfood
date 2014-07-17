@@ -13,10 +13,10 @@ module Fastfood
     # install the package with the given name using the default options.
     #
     # When **new_package** is a hash, the key is the name of the package and the
-    # keys are additional values understood vy the package installer such as
+    # keys are additional values understood by the package installer such as
     # version, or repoisitory address.
     def package( *new_packages )
-      packages = fetch( :system_packages, { all: {} } )
+      packages = fetch( :system_packages, all: {} )
       options  = new_packages.pop if new_packages.length > 1 && new_packages.last.is_a?( Hash )
       options  ||= {}
 

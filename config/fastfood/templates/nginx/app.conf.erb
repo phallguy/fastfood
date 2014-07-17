@@ -1,0 +1,72 @@
+upstream <%= data[:application] %>_app {
+  server unix:/tmp/app.<%= data[:application] %>.sock fail_timeout=0;
+}
+
+<% if data[:ssl] %>
+# Force SSL only
+server {
+  server_name <%= data[:domain_name] %> *.<%= data[:domain_name] %>;
+  listen 80;
+  return 302 https://<%= data[:domain_name] %>$request_uri;
+}
+<% end %>
+
+# Canonical domain
+server {
+  server_name *.<%= data[:domain_name] %>;
+  return 302 http://<%= data[:domain_name] %>$request_uri;
+}
+
+server {
+  <% if data[:ssl] %>
+  listen 443 ssl;
+  ssl_certificate       certificates/<%= data[:application] %>/server.crt;
+  ssl_certificate_key   certificates/<%= data[:application] %>/server.key;
+  <% else %>
+  listen 80 default deferred;
+  <% end %>
+
+  server_name <%= data[:domain_name] %>;
+  root <%= current_path %>/public;
+
+  gzip on;
+
+  location ^~ /(<%= data[:static_paths].join( ')|(' ) %>)/ {
+    gzip_static on;
+    expires max;
+    add_header Cache-Control public;
+    add_header X-Content-Type-Options nosniff;
+    access_log off;
+    gzip_vary on;
+  }
+
+  try_files $uri/index.html $uri @<%= data[:application] %>_app;
+
+  # Black list these paths cause they're being pinged from hackers.
+  location ~* ^/(stripehooks|callbacks/geo|\.php|realtime) {
+    rewrite .* http://$remote_addr redirect;
+    break;
+    return 500;
+  }
+
+  location @<%= data[:application] %>_app {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    proxy_pass http://<%= data[:application] %>_app;
+  }
+
+  error_page 500 502 503 504 /500.html;
+  client_max_body_size 4G;
+  keepalive_timeout 10;
+
+  if (-f $document_root/system/maintenance.html) {
+    return 503;
+  }
+  error_page 503 @maintenance;
+  location @maintenance {
+    rewrite  ^(.*)$  /system/maintenance.html last;
+    break;
+  }
+}

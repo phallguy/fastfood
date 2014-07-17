@@ -44,7 +44,7 @@ namespace :postgresql do
 
 end
 
-task settingup: "postgres:setup"
+task settingup: "postgresql:setup"
 
 namespace :load do
   task :defaults do

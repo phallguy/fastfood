@@ -26,6 +26,8 @@ module Fastfood
 
         def install_packages( packages )
           packages = packages_for_host( packages )
+
+          add_repos( packages )
           on_host do
             # Ignore dpkg-preconfigure: unable to re-open stdin: No such file or directory
             sudo :'apt-get', "-y install #{ packages_to_command( packages ) } 2> /dev/null"
@@ -60,6 +62,25 @@ module Fastfood
           end
 
           command.join('')
+        end
+
+        def add_repos( packages )
+          needs_update = false
+          manifest.select :apt_get_repositories do |bucket|
+            packages.each do |key,value|
+              next unless value.is_a? Hash
+              next unless repo = value[:repo]
+              next if bucket[repo]
+
+              bucket[repo] = true
+              needs_update = true
+              on_host do
+                sudo :'add-apt-repository', repo
+              end
+            end
+          end
+
+          update_system if needs_update
         end
 
     end
