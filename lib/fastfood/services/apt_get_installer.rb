@@ -58,6 +58,7 @@ module Fastfood
             if version = value[:version]
               command << "="
               command << value[:version]
+              command << "*"
             end
           end
 

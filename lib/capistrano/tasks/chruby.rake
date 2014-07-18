@@ -35,7 +35,7 @@ namespace :chruby do
             changes entry: "gem: --no-rdoc --no-ri", id: "skip-documentation"
           end
 
-          execute "/usr/local/bin/chruby-exec #{ruby_version} -- gem install bundler"
+          sudo "/usr/local/bin/chruby-exec #{ruby_version} -- gem install bundler"
         end
       end
     end

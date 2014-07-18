@@ -41,6 +41,14 @@ namespace :nginx do
   desc "Install and configure nginx"
   task setup: [:install,:config]
 
+  %i{ start stop restart }.each do |command|
+    task command do
+      on provisioned_hosts( :web ) do
+        sudo "/etc/init.d/nginx #{command}"
+      end
+    end
+  end
+
 end
 
 task settingup: "nginx:setup"
@@ -49,7 +57,7 @@ namespace :load do
   task :defaults do
     set :nginx_worker_processes, 2
     set :ssl, false
-    set :static_paths, "assets"
+    set :static_paths, fetch(:assets_prefix)
     set :domain_name, ->{ primary( :web ).hostname.split(".")[1..-1].join('.') }
 
     fastfood do

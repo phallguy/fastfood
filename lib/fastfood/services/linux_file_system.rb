@@ -15,7 +15,9 @@ module Fastfood
           chown += ":#{group}"   if group
 
           on_host do
-            sudo :chown, chown, path unless chown.empty?
+            if test( "[ -f '#{path}' ]")
+              sudo :chown, chown, path unless chown.empty?
+            end
           end
         end
 
@@ -23,7 +25,9 @@ module Fastfood
           return unless mode
 
           on_host do
-            sudo :chmod, mode, path
+            if test( "[ -f '#{path}' ]")
+              sudo :chmod, mode, path
+            end
           end
         end
 

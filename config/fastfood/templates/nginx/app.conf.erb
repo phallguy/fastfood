@@ -1,5 +1,6 @@
 upstream <%= data[:application] %>_app {
   server unix:/tmp/app.<%= data[:application] %>.sock fail_timeout=0;
+  server localhost:3000;
 }
 
 <% if data[:ssl] %>

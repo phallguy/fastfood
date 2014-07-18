@@ -90,16 +90,14 @@ module Fastfood
     # @param [Host] host to put the file on.
     # @param [String,Hash] options_or_destination either the destination path, or an options hash for the File service.
     def server_file( host, options_or_destination = nil, &block )
-      options_or_destination = { destination: options_or_destination } if options_or_destination.is_a? String
-      _dsl_method host, :file, options_or_destination , &block
+      _file_system_dsl host, :file, options_or_destination, &block
     end
 
     # Creates a folder on the remote server.
     # @param [Host] host to put the folder on.
     # @param [String,Hash] options_or_destination either the destination path, or an options hash for the Folder service.
     def server_folder( host, options_or_destination = nil, &block )
-      options_or_destination = { destination: options_or_destination } if options_or_destination.is_a? String
-      _dsl_method host, :folder, options_or_destination , &block
+      _file_system_dsl host, :folder, options_or_destination, &block
     end
 
     # Makes a change in a config file.
@@ -115,6 +113,12 @@ module Fastfood
     end
 
     private
+
+      def _file_system_dsl( host, subject, options_or_destination = nil, &block )
+        options_or_destination = options_or_destination.to_path if options_or_destination.respond_to? :to_path
+        options_or_destination = { destination: options_or_destination } if options_or_destination.is_a? String
+        _dsl_method host, subject, options_or_destination , &block
+      end
 
       def _dsl_method( host, subject, options, &block )
         options ||= {}

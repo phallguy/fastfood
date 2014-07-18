@@ -48,4 +48,19 @@ module Fastfood
   ]
   def file_paths; @file_paths end
 
+  # Gets the ip addresses associated with the given hostname.
+  def ip_addresses( hostname )
+    @@resolve ||= Resolv.new
+    @@ip_addresses_cached ||= {}
+
+    @@ip_addresses_cached[hostname.to_s] ||= begin
+      addresses = []
+      @@resolve.each_address( hostname ) do |addr|
+        addresses << addr
+      end
+
+      addresses
+    end
+  end
+
 end

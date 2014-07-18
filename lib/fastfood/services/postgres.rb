@@ -5,6 +5,7 @@ module Fastfood
       private
 
         def run_with_data( data )
+          config( data )
           create_user( data )
           create_db( data )
           run_sql( data )
@@ -42,9 +43,9 @@ module Fastfood
           return unless create = data[:create_db]
 
           on_host do
-            unless db_exists?( data, create[:name] )
-              unless psql data, "-c", %Q{ "CREATE database #{create[:name]} owner #{create[:owner]}" }
-                error "PG database #{create[:name]} could not be created."
+            unless db_exists?( data, data[:database] )
+              unless psql data, "-c", %Q{ "CREATE database #{data[:database]} owner #{data[:owner]}" }
+                error "PG database #{data[:database]} could not be created."
                 exit 1
               end
             end
@@ -53,6 +54,34 @@ module Fastfood
               psql data, "-c", %Q{"CREATE EXTENSION IF NOT EXISTS #{extension} "}
             end
           end
+        end
+
+        def config( data )
+          return unless config = data[:config]
+
+          entries     = permitted_host_entries( config, data )
+          config_file = File.join( config[:config_dir], "pg_hba.conf" )
+
+          run_service \
+            :config_change,
+            file: config_file,
+            changes: { entry: entries, id: "app-permissions" }
+
+          on_host do
+            sudo :chown, "#{data[:user]}:#{data[:user]}", config_file
+          end
+        end
+
+        def permitted_host_entries( config, data )
+          servers = config[:servers] || roles( :app ).map(&:internal_hostname)
+          entry = servers.map do |server|
+            Fastfood.ip_addresses( server ).map do |addr|
+              [
+                "host #{data[:database]} #{data[:owner]} #{addr}/32 md5",
+                "hostssl #{data[:database]} #{data[:owner]} #{addr}/32 md5"
+              ]
+            end
+          end.flatten.compact.join( $/ )
         end
 
         def run_sql( data )

@@ -5,6 +5,8 @@ module Fastfood
     # Key/value store for instance data.
     class Bucket < Hashie::Mash
 
+      include Fastfood::Extensions::DirtyTrackingHash
+
       def initialize( *args )
         super
         @_dirty = false
@@ -17,32 +19,6 @@ module Fastfood
         end
 
         version && Gem::Version.new( manifest_version ) < Gem::Version.new( version )
-      end
-
-      # Indicates if the hash has changed since it was loaded.
-      def dirty?
-        @_dirty
-      end
-
-      # Marks the hash as clean for dirty tracking.
-      def clean!
-        @_dirty = false
-        self
-      end
-
-      # Marks the bucket as dirty.
-      def dirty!
-        @_dirty = true
-        self
-      end
-
-      %w{ []= store update replace delete }.each do |method|
-        class_eval %{
-          def #{method}( *args )
-            dirty!
-            super
-          end
-        }
       end
 
     end

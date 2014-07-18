@@ -84,4 +84,3 @@ namespace :fastfood do
 end
 
 task :settingup => "fastfood:bootstrap"
-task "deploy:check" => "fastfood:install_client"

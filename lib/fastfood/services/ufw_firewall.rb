@@ -72,11 +72,9 @@ module Fastfood
             when Symbol
               addresses += expand_hosts( roles( h ) )
             when SSHKit::Host
-              addresses += expand_hosts( h.fetch( :internal_hostname ) || h.hostname )
+              addresses += h.internal_ip_addresses
             else
-              @resolve.each_address( h ) do |address|
-                addresses << address.to_s
-              end
+              Fastfood.ip_addresses( h )
             end
           end
 

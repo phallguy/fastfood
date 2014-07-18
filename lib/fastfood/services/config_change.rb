@@ -19,7 +19,7 @@ module Fastfood
 
           on_host do
             if test( "[ -f #{file} ]" )
-              contents = download! file
+              contents = sudo_download! file
             end
           end
 
