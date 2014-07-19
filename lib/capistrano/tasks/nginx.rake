@@ -28,6 +28,7 @@ namespace :nginx do
         application   fetch(:safe_application)
         domain_name   fetch(:domain_name)
         static_paths  Array( fetch(:static_paths) )
+        bind          fetch(:app_bind)
       end
 
       on provisioned_host host do
@@ -48,6 +49,7 @@ namespace :nginx do
       end
     end
   end
+  after "deploy:publishing", "nginx:restart"
 
 end
 
