@@ -28,7 +28,7 @@ namespace :nginx do
         application   fetch(:safe_application)
         domain_name   fetch(:domain_name)
         static_paths  Array( fetch(:static_paths) )
-        bind          fetch(:app_bind)
+        bind          fetch(:nginx_bind)
       end
 
       on provisioned_host host do
@@ -61,6 +61,7 @@ namespace :load do
     set :ssl, false
     set :static_paths, fetch(:assets_prefix)
     set :domain_name, ->{ primary( :web ).hostname.split(".")[1..-1].join('.') }
+    set :nginx_bind, ->{ fetch(:puma_bind) || fetch(:unicorn_bind) || "http://localhost:3000" }
 
     fastfood do
       package nginx: { repo: "ppa:nginx/stable" }
