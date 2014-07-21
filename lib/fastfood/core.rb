@@ -43,8 +43,8 @@ module Fastfood
   # @return [Array<String>] paths to search when looking for templates and repo
   #   data.
   @file_paths = [
-    File.expand_path("..",ENV["BUNDLE_GEMFILE"]),
     File.expand_path( "../../..", __FILE__ ),
+    File.expand_path("..",ENV["BUNDLE_GEMFILE"]),
   ]
   def file_paths; @file_paths end
 
@@ -53,14 +53,7 @@ module Fastfood
     @@resolve ||= Resolv.new
     @@ip_addresses_cached ||= {}
 
-    @@ip_addresses_cached[hostname.to_s] ||= begin
-      addresses = []
-      @@resolve.each_address( hostname ) do |addr|
-        addresses << addr
-      end
-
-      addresses
-    end
+    @@ip_addresses_cached[hostname.to_s] ||= @@resolve.getaddresses( hostname )
   end
 
 end

@@ -1,4 +1,3 @@
-puts "Helpers"
 module Helpers
   module FixtureHelpers
 

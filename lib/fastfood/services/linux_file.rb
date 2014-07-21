@@ -64,7 +64,7 @@ module Fastfood
 
         def _config_value( hash, parts )
           val = hash[parts.shift]
-          if parts.any?
+          if val && parts.any?
             _config_value( val, parts )
           else
             val
@@ -77,7 +77,7 @@ module Fastfood
           if parts.any?
             val ||= {}
             hash[key] = val
-            _set_config_value( val, parts )
+            _set_config_value( hash[key], parts, value )
           else
             hash[key] = value
           end

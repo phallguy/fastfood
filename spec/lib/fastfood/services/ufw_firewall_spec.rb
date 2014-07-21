@@ -48,7 +48,6 @@ describe Fastfood::Services::UfwFirewall do
       firewall.run rules: [{ command: :allow, port: 80, on: :all, from: "beakered.com" }]
     end
 
-
   end
 
 end

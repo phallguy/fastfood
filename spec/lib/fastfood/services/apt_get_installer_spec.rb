@@ -1,10 +1,16 @@
 require 'spec_helper'
 
 describe Fastfood::Services::AptGetInstaller do
+
+  include Helpers::ServiceHelpers
+
+
   let(:host){ Capistrano::Configuration::Server.new( "deploy@example.com" ) }
   let(:installer){ Fastfood::Services::AptGetInstaller.new( host, nil ) }
 
   before(:each) do
+    fake_manifest( installer )
+
     allow( installer ).to receive(:on_host)
   end
 
@@ -53,7 +59,7 @@ describe Fastfood::Services::AptGetInstaller do
 
     it "works" do
       commands = installer.send :packages_to_command, packages
-      expect( commands ).to eq "git nginx=1.3"
+      expect( commands ).to eq "git nginx=1.3*"
     end
   end
 end

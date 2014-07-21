@@ -56,6 +56,8 @@ module Fastfood
               host_args = protocol_args.dup
 
               host_args << "from #{from_host}" unless from_host == :any
+
+
               ufw *host_args
             end
           end
@@ -63,22 +65,19 @@ module Fastfood
 
         def expand_hosts( from )
           @resolve ||= Resolv.new
-          addresses = []
 
           Array( from ).map do |h|
             case h
             when :any
-              addresses << h
+              h
             when Symbol
-              addresses += expand_hosts( roles( h ) )
+              expand_hosts( roles( h ) )
             when SSHKit::Host
-              addresses += h.internal_ip_addresses
+              h.internal_ip_addresses
             else
               Fastfood.ip_addresses( h )
             end
-          end
-
-          addresses.flatten.compact.uniq
+          end.flatten.compact.uniq
         end
 
         def reset_rules
