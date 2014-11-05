@@ -23,4 +23,6 @@ namespace :fastfood do
     after "deploy:updating", "fastfood:secrets:link"
 
   end
+
+  task :secrets => ["secrets:generate","secrets:link"]
 end

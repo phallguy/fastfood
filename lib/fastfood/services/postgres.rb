@@ -51,7 +51,7 @@ module Fastfood
             end
 
             Array(create[:extensions]).each do |extension|
-              psql data, "-c", %Q{"CREATE EXTENSION IF NOT EXISTS #{extension} "}
+              psql data, "-d", data[:database], "-c", %Q{"CREATE EXTENSION IF NOT EXISTS #{extension} "}
             end
           end
         end
