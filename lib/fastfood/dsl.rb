@@ -112,6 +112,15 @@ module Fastfood
       Fastfood::Manifest.new( host, File.join( fetch(:fastfood_folder), "manifest" ) )
     end
 
+    # Execute the block with the given verbosity.
+    def with_verbosity( verbosity, &block )
+      original = SSHKit.config.output_verbosity
+      SSHKit.config.output_verbosity = verbosity
+      yield
+    ensure
+      SSHKit.config.output_verbosity = original
+    end
+
     private
 
       def _file_system_dsl( host, subject, options_or_destination = nil, &block )

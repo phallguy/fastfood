@@ -14,6 +14,10 @@ namespace :postgresql do
   desc "Install and configure postgresql"
   task :setup => [:install,:config,:create_db]
 
+  desc "Import the production database to your local instance"
+  task :import => [ :download, :import_download, :remove_download ] do
+  end
+
   task :create_db => ["postgresql:set_password"] do
     on provisioned_hosts(:db) do
       provision :sql, host,
@@ -68,6 +72,33 @@ namespace :postgresql do
     invoke "postgresql:generate_database_yml" unless found
   end
 
+  task :download => ['postgresql:set_password'] do
+    on provisioned_hosts( :db ) do
+      provision :sql, host,
+        pg_config(
+          download: fetch( :pg_import_base ),
+          password: fetch( :pg_password )
+          )
+    end
+  end
+
+  task :import_download do
+    run_locally do
+      execute %Q{ psql -d #{ fetch :pg_local_database }  -c "select 'drop table \\"' || tablename || '\\" cascade;' from pg_tables where schemaname='public';" --quiet --tuples-only --output /tmp/drop_tables.sql }
+      execute %Q{ cat /tmp/drop_tables.sql | psql -d #{ fetch :pg_local_database }  > /dev/null  }
+      File.delete '/tmp/drop_tables.sql'
+
+      execute "pg_restore -Fc --single-transaction --no-owner -d #{ fetch :pg_local_database } #{ fetch :pg_import_base }.sqlc"
+
+    end
+  end
+
+  task :remove_download do
+    File.delete  "#{ fetch( :pg_import_base ) }.sqlc"
+  end
+
+
+
   %i{ start stop restart }.each do |command|
     task command do
       on provisioned_hosts( :db ) do
@@ -82,13 +113,16 @@ task settingup: "postgresql:setup"
 
 namespace :load do
   task :defaults do
-    set :pg_version,      "9.3"
-    set :pg_database,     -> { "#{ fetch(:safe_application) }_#{fetch(:stage)}" }
-    set :pg_user,         -> { fetch(:pg_database) }
-    set :pg_host,         -> { db = roles(:db).first.internal_hostname }
-    set :pg_password,     -> { ask "a new PG password: ", SecureRandom.hex }
-    set :pg_system_user,  "postgres"
-    set :pg_config_dir,   -> { "/etc/postgresql/#{fetch(:pg_version)}/main" }
+    set :pg_version,        "9.3"
+    set :pg_database,       -> { "#{ fetch(:safe_application) }_#{fetch(:stage)}" }
+    set :pg_local_database, -> { "#{ fetch(:safe_application) }_development" }
+    set :pg_user,           -> { fetch(:pg_database) }
+    set :pg_host,           -> { db = roles(:db).first.internal_hostname }
+    set :pg_password,       -> { ask "a new PG password: ", SecureRandom.hex }
+    set :pg_system_user,    "postgres"
+    set :pg_config_dir,     -> { "/etc/postgresql/#{fetch(:pg_version)}/main" }
+
+    set :pg_import_base,  -> { "/tmp/#{ fetch( :safe_application ) }" }
 
     fetch(:fastfood_franchise).register_service :sql, Fastfood::Services::Postgres
 

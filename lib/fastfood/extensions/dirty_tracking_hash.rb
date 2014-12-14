@@ -11,17 +11,17 @@ module Fastfood::Extensions::DirtyTrackingHash
       self
     end
 
-    def hash.[]=( key, value ); dirty!; super key, _dirty_tracking_value( value ) end
-    def hash.store( key, value ); dirty!; super key, _dirty_tracking_value( value ) end
+    def hash.[]=( key, value )     ; dirty! ; super key, _dirty_tracking_value( value ) end
+    def hash.store( key, value )   ; dirty! ; super key, _dirty_tracking_value( value ) end
 
-    def hash.clear( *args ); dirty!; super end
-    def hash.keep_if( *args ); dirty!; super end
-    def hash.delete( *args ); dirty!; super end
-    def hash.reject!( *args ); dirty!; super end
+    def hash.clear( *args )        ; dirty! ; super end
+    def hash.keep_if( *args )      ; dirty! ; super end
+    def hash.delete( *args )       ; dirty! ; super end
+    def hash.reject!( *args )      ; dirty! ; super end
 
-    def hash.update( other_hash ); dirty!; super key, _dirty_tracking_value( other_hash ) end
-    def hash.replace( other_hash ); dirty!; super key, _dirty_tracking_value( other_hash ) end
-    def hash.merge!( other_hash ); dirty!; super key, _dirty_tracking_value( other_hash ) end
+    def hash.update( other_hash )  ; dirty! ; super key, _dirty_tracking_value( other_hash ) end
+    def hash.replace( other_hash ) ; dirty! ; super key, _dirty_tracking_value( other_hash ) end
+    def hash.merge!( other_hash )  ; dirty! ; super key, _dirty_tracking_value( other_hash ) end
   end
 
   def initialize( *args )

@@ -9,6 +9,7 @@ module Fastfood
           create_user( data )
           create_db( data )
           run_sql( data )
+          download_db( data )
         end
 
         # Blatantly ripped from https://github.com/bruno-/capistrano-postgresql/blob/master/lib/capistrano/postgresql/psql_helpers.rb
@@ -78,7 +79,9 @@ module Fastfood
             Fastfood.ip_addresses( server ).map do |addr|
               [
                 "host #{data[:database]} #{data[:owner]} #{addr}/32 md5",
-                "hostssl #{data[:database]} #{data[:owner]} #{addr}/32 md5"
+                "hostssl #{data[:database]} #{data[:owner]} #{addr}/32 md5",
+                "host #{data[:database]} #{data[:user]} #{addr}/32 md5",
+                "hostssl #{data[:database]} #{data[:user]} #{addr}/32 md5"
               ]
             end
           end.flatten.compact.join( $/ )
@@ -88,6 +91,35 @@ module Fastfood
           return unless command = data[:command]
 
           psql data, "-c", %Q{"#{command}"}
+        end
+
+        def download_db( data )
+          return unless download = data[:download]
+
+          result = nil
+
+          server = roles( :db ).first.internal_hostname
+
+
+          on_host do
+            with_verbosity Logger::ERROR do
+              # TODO Find a way to stream to the output file
+              result = capture :sudo, "-u #{data[:user]} PGPASSWORD=#{ data[:password] } pg_dump -h #{ server } -U #{data[:owner]} --no-privileges --no-owner  -Fc -w #{ data[:database]}"
+            end
+          end
+
+          File.open( "#{ download }.sqlc", 'wb' ) do |f|
+            f.write result
+
+            # BUG in SSHKit does not capture tailing 0 in output so pad out an
+            # extra 16 null bytes
+            f.write ?\0 * 5
+
+          end
+
+        rescue StandardError => e
+          binding.pry
+          raise
         end
     end
   end
